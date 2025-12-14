@@ -4,67 +4,56 @@
 const animationTooltipData = {
     'lightOneBtn': { 
         title: 'Fade Colors', 
-        // description: 'Smooth color transitions between multiple colors',
         animationType: 'fade_colors',
         startFunction: 'startFadeAnimation'
     },
     'WaveEffectBtn': { 
         title: 'Wave Effect', 
-        // description: 'Color wave moving through the LED strip',
         animationType: 'wave_effect',
         startFunction: 'startWaveAnimation'
     },
     'RainbowFlowBtn': { 
         title: 'Rainbow Flow', 
-        // description: 'Continuous rainbow color cycling',
         animationType: 'rainbow_flow',
         startFunction: 'startRainbowAnimation'
     },
     'BlinkingPatternBtn': { 
         title: 'Blinking Pattern', 
-        // description: 'Random color blinking pattern',
         animationType: 'blinking_pattern',
         startFunction: 'startBlinkingPattern'
     },
     'RunningLightsBtn': { 
         title: 'Running Lights', 
-        // description: 'Multiple lights running across the strip',
         animationType: 'running_lights',
         startFunction: 'startRunningLights'
     },
     'BreathingEffectBtn': { 
         title: 'Breathing Effect', 
-        // description: 'Gentle breathing effect with color transitions',
         animationType: 'breathing_effect',
         startFunction: 'startBreathingAnimation'
     },
     'MeteorShowerBtn': { 
         title: 'Meteor Shower', 
-        // description: 'Multiple colored snakes chasing each other',
         animationType: 'meteor_shower',
         startFunction: 'startSnakesChasing'
     },
     'RandomColorsBtn': { 
         title: 'Random Colors', 
-        // description: 'Random color snakes with varying lengths',
         animationType: 'random_colors',
         startFunction: 'startRandomColors'
     },
     'PulseSyncBtn': { 
         title: 'Pulse Sync', 
-        // description: 'Synchronized pulsing with random colors',
         animationType: 'pulse_sync',
         startFunction: 'startPulseSyncAnimation'
     },
     'FireworksBurstBtn': { 
         title: 'Fireworks Burst', 
-        // description: 'Fireworks simulation with launch and explosion',
         animationType: 'fireworks_burst',
         startFunction: 'startFireworksBurst'
     },
     'MeteorShowerNewBtn': { 
         title: 'Meteor Shower (Single)', 
-        // description: 'Single meteor shower with smooth movement',
         animationType: 'single_snake',
         startFunction: 'startSingleSnake'
     }
@@ -75,6 +64,11 @@ let currentAnimationTooltip = null;
 let currentAnimationBrightness = 25;
 let currentAnimationButton = null;
 let isApplyingBrightness = false;
+
+// NEW: متغيرات التأخير للـ tooltip
+let animationHoverTimeout = null; // للتأخير
+let animationTooltipShownByClick = false; // لتتبع إذا كان الـ tooltip معروضاً بالنقر
+let isAnimationHovering = false; // لتتبع حالة التحويم
 
 // دالة لتحميل سطوع الأنيميشن من localStorage
 function loadAnimationBrightnessFromStorage() {
@@ -176,23 +170,75 @@ function setupAnimationEventListeners() {
         if (animationTooltipData[buttonId]) {
             console.log('Adding listeners to animation button:', buttonId);
             
-            // mouseenter على الزر
+            // إضافة كلاس التأخير للتحويم للمؤشر البصري
+            button.classList.add('button-hover-delay');
+            
+            // mouseenter على الزر - مع تأخير 3 ثواني
             button.addEventListener('mouseenter', (e) => {
                 console.log('Mouse enter on animation button:', buttonId);
-                showAnimationTooltip(e.target, buttonId);
+                isAnimationHovering = true;
+                
+                // عدم إظهار إذا كان الـ tooltip معروضاً بالفعل (إلا إذا كان معروضاً بالنقر)
+                if (currentAnimationTooltip && currentAnimationTooltip.classList.contains('show') && !animationTooltipShownByClick) {
+                    return;
+                }
+                
+                // إلغاء أي تأخير سابق
+                if (animationHoverTimeout) {
+                    clearTimeout(animationHoverTimeout);
+                    animationHoverTimeout = null;
+                }
+                
+                // بدء تأخير 3 ثواني للتحويم
+                animationHoverTimeout = setTimeout(() => {
+                    console.log('3-second hover delay completed - showing animation tooltip');
+                    if (isAnimationHovering) { // فقط إذا كان لا يزال التحويم مستمراً
+                        animationTooltipShownByClick = false;
+                        showAnimationTooltip(e.target, buttonId);
+                    }
+                    animationHoverTimeout = null;
+                }, 3000); // 3 ثواني
             });
 
             // mouseleave على الزر
             button.addEventListener('mouseleave', (e) => {
                 console.log('Mouse leave from animation button:', buttonId);
-                const relatedTarget = e.relatedTarget;
-                if (!relatedTarget || (currentAnimationTooltip && !currentAnimationTooltip.contains(relatedTarget))) {
-                    hideAnimationTooltip();
+                isAnimationHovering = false;
+                
+                // إلغاء تأخير التحويم
+                if (animationHoverTimeout) {
+                    clearTimeout(animationHoverTimeout);
+                    animationHoverTimeout = null;
+                    console.log('Animation hover timeout cleared');
+                }
+                
+                // فقط إخفاء الـ tooltip إذا كان معروضاً بالتحويم (وليس بالنقر)
+                if (currentAnimationTooltip && currentAnimationTooltip.classList.contains('show') && !animationTooltipShownByClick) {
+                    const relatedTarget = e.relatedTarget;
+                    // التحقق إذا كان الماوس ينتقل إلى الـ tooltip
+                    if (!relatedTarget || (currentAnimationTooltip && !currentAnimationTooltip.contains(relatedTarget))) {
+                        hideAnimationTooltip();
+                    }
                 }
             });
 
-            // click على الزر - نترك السلوك الأصلي يعمل
-            // لا نضيف معالج اضافي هنا لأن app.js already handles the toggle behavior
+            // click على الزر - إظهار فوري
+            button.addEventListener('click', (e) => {
+                console.log('Animation button clicked - showing tooltip immediately');
+                e.stopPropagation();
+                
+                // إلغاء أي تأخير تحويم
+                if (animationHoverTimeout) {
+                    clearTimeout(animationHoverTimeout);
+                    animationHoverTimeout = null;
+                }
+                
+                // تعيين العلم أن الـ tooltip معروض بالنقر
+                animationTooltipShownByClick = true;
+                
+                // إظهار الـ tooltip فوراً
+                showAnimationTooltip(e.target, buttonId);
+            });
         }
     });
 
@@ -205,9 +251,41 @@ function setupAnimationEventListeners() {
 
         currentAnimationTooltip.addEventListener('mouseleave', () => {
             console.log('Mouse leave from animation tooltip');
-            hideAnimationTooltip();
+            // فقط إخفاء إذا كان الـ tooltip معروضاً بالتحويم (وليس بالنقر)
+            if (!animationTooltipShownByClick) {
+                hideAnimationTooltip();
+            }
         });
     }
+    
+    // NEW: إغلاق الـ tooltip عند النقر خارجاً
+    document.addEventListener('click', function(e) {
+        if (currentAnimationTooltip && currentAnimationTooltip.classList.contains('show')) {
+            // التحقق إذا كان النقر خارج الـ tooltip وليس على زر أنيميشن
+            if (!currentAnimationTooltip.contains(e.target) && 
+                !e.target.closest('.button-container button.custom-animation-btn')) {
+                hideAnimationTooltip();
+                animationTooltipShownByClick = false;
+            }
+        }
+    });
+    
+    // NEW: إلغاء تأخير التحويم عند فقدان نافذة التركيز
+    window.addEventListener('blur', function() {
+        if (animationHoverTimeout) {
+            clearTimeout(animationHoverTimeout);
+            animationHoverTimeout = null;
+        }
+        isAnimationHovering = false;
+    });
+    
+    // NEW: إلغاء تأخير التحويم عند إعادة تحميل الصفحة
+    window.addEventListener('beforeunload', function() {
+        if (animationHoverTimeout) {
+            clearTimeout(animationHoverTimeout);
+            animationHoverTimeout = null;
+        }
+    });
 }
 
 function showAnimationTooltip(button, buttonId) {
@@ -273,6 +351,7 @@ function showAnimationTooltip(button, buttonId) {
 function hideAnimationTooltip() {
     if (currentAnimationTooltip) {
         currentAnimationTooltip.classList.remove('show');
+        animationTooltipShownByClick = false; // إعادة تعيين العلم
         console.log('Animation tooltip hidden');
     }
 }

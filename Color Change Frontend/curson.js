@@ -41,7 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function applyBlackTheme() {
     cursor.classList.add("theme-black");
     cursor.style.setProperty("--cursor-hover-color", "#ffffff");
-    // stop neon idle
     stopIdleCycle();
   }
 
@@ -54,7 +53,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let idleInterval = null;
   function startIdleCycle() {
-    // avoid multiple intervals
     stopIdleCycle();
     idleInterval = setInterval(() => {
 
@@ -142,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           applyNeonTheme(color);
         }
-      } catch (err) { /* ignore */ }
+      } catch (err) {  }
       return originalChange.apply(this, arguments);
     };
   }

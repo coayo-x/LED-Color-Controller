@@ -1,6 +1,5 @@
-// customcolorpicker.js - الملف المحدث والمصحح
+// customcolorpicker.js
 
-// بيانات التلميحات لأزرار Custom Animation
 const customColorPickerTooltipData = {
     'customFadeBtn': { 
         title: 'Fade Colors - Custom', 
@@ -92,14 +91,12 @@ const customColorPickerTooltipData = {
     }
 };
 
-// متغيرات عالمية للتحكم في اللون والسطوع
 let ccpTooltip = null;
 let ccpBrightness = 25;
-let ccpSelectedColor = null; // null بدلاً من قيمة افتراضية
-let ccpClickedButton = null; // الزر الذي تم النقر عليه فعلياً
+let ccpSelectedColor = null;
+let ccpClickedButton = null; 
 let ccpIsApplying = false;
 
-// رسائل الخطأ العشوائية
 const ccpErrorMessages = [
     "Plz choose color 🙏",
     "Animations need some color vibes.",
@@ -113,7 +110,6 @@ const ccpErrorMessages = [
     "The lights need your color choice!"
 ];
 
-// دالة لتحميل الإعدادات من localStorage
 function ccpLoadSettings() {
     const savedBrightness = localStorage.getItem('ccpBrightness');
     const savedColor = localStorage.getItem('ccpColor');
@@ -129,29 +125,23 @@ function ccpLoadSettings() {
     console.log('Loaded CCP settings - Brightness:', ccpBrightness, 'Color:', ccpSelectedColor);
 }
 
-// دالة لحفظ الإعدادات في localStorage
 function ccpSaveSettings() {
     localStorage.setItem('ccpBrightness', ccpBrightness.toString());
     localStorage.setItem('ccpColor', ccpSelectedColor);
     console.log('Saved CCP settings - Brightness:', ccpBrightness, 'Color:', ccpSelectedColor);
 }
 
-// دالة للحصول على رسالة خطأ عشوائية
 function ccpGetRandomError() {
     return ccpErrorMessages[Math.floor(Math.random() * ccpErrorMessages.length)];
 }
 
-// تهيئة النظام
 function ccpInit() {
     console.log('Initializing Custom Color Picker...');
     
-    // تحميل الإعدادات المحفوظة
     ccpLoadSettings();
     
-    // إنشاء الـ tooltip
     ccpCreateTooltip();
     
-    // إعداد event listeners
     ccpSetupEventListeners();
 }
 
@@ -169,7 +159,6 @@ function ccpCreateTooltip() {
             <h3 id="ccp-tooltip-title">Custom Color Animation</h3>
             <div class="ccp-description" id="ccp-description">Animation description</div>
             
-            <!-- Color Picker الجديد -->
             <div class="ccp-color-container">
                 <div class="ccp-color-title">Choose Your Color:</div>
                 <div class="ccp-color-wrapper">
@@ -215,7 +204,6 @@ function ccpCreateTooltip() {
 function ccpSetupEventListeners() {
     console.log('Setting up CCP event listeners...');
     
-    // إضافة event listener للزر Apply
     document.addEventListener('click', function(e) {
         if (e.target && e.target.id === 'ccp-apply-btn') {
             console.log('CCP Apply button clicked');
@@ -223,7 +211,6 @@ function ccpSetupEventListeners() {
         }
     });
 
-    // إضافة event listener لعجلة الماوس على شريط السطوع
     document.addEventListener('wheel', function(e) {
         const brightnessSlider = document.getElementById('ccp-brightness-slider');
         if (brightnessSlider && (e.target === brightnessSlider || brightnessSlider.contains(e.target))) {
@@ -232,19 +219,16 @@ function ccpSetupEventListeners() {
         }
     });
 
-    // إضافة event listener لسحب شريط التمرير
     document.addEventListener('input', function(e) {
         if (e.target && e.target.id === 'ccp-brightness-slider') {
             ccpHandleBrightnessChange(e);
         }
         
-        // event listener للـ color picker الجديد
         if (e.target && e.target.id === 'ccp-color-picker') {
             ccpHandleColorChange(e);
         }
     });
 
-    // إضافة event listeners لأزرار Custom Animation - CLICK فقط
     const customButtons = document.querySelectorAll('.button-container button:not(.custom-animation-btn)');
     console.log('Found custom buttons:', customButtons.length);
     
@@ -252,7 +236,6 @@ function ccpSetupEventListeners() {
         const buttonId = button.id;
         
         if (customColorPickerTooltipData[buttonId]) {
-            // click فقط - لا mouseenter
             button.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -263,7 +246,6 @@ function ccpSetupEventListeners() {
         }
     });
 
-    // event listeners للـ tooltip نفسه
     if (ccpTooltip) {
         ccpTooltip.addEventListener('mouseenter', () => {
             ccpTooltip.classList.add('show');
@@ -274,7 +256,6 @@ function ccpSetupEventListeners() {
         });
     }
 
-    // منع فتح الـ color picker الأصلي عند النقر على الأزرار المخصصة
     document.addEventListener('click', function(e) {
         if (e.target && customColorPickerTooltipData[e.target.id]) {
             e.preventDefault();
@@ -317,13 +298,11 @@ function ccpShowTooltip(button, buttonId) {
     tooltipTitle.textContent = buttonData.title || '';
     description.textContent = buttonData.description || '';
 
-    // توليد ألوان عشوائية جديدة
     const [color1, color2, color3] = ccpGenerateRandomColors();
     ccpTooltip.style.setProperty('--ccp-color-1', color1);
     ccpTooltip.style.setProperty('--ccp-color-2', color2);
     ccpTooltip.style.setProperty('--ccp-color-3', color3);
 
-    // تحديث الـ color picker وعرض اللون
     if (ccpSelectedColor) {
         colorPicker.value = ccpSelectedColor;
         colorPreview.style.background = ccpSelectedColor;
@@ -332,7 +311,7 @@ function ccpShowTooltip(button, buttonId) {
         previewText.textContent = 'Selected Color';
         previewText.classList.remove('ccp-no-color-text');
     } else {
-        colorPicker.value = '#ff0000'; // قيمة افتراضية للـ input فقط
+        colorPicker.value = '#ff0000'; 
         colorPreview.style.background = 'transparent';
         colorPreview.textContent = '?';
         colorPreview.classList.add('ccp-no-color');
@@ -340,18 +319,14 @@ function ccpShowTooltip(button, buttonId) {
         previewText.classList.add('ccp-no-color-text');
     }
 
-    // تحديث شريط السطوع
     brightnessSlider.value = ccpBrightness;
     brightnessValue.textContent = `${ccpBrightness}%`;
 
-    // إخفاء رسالة الخطأ
     errorMessage.textContent = '';
     errorMessage.style.display = 'none';
 
-    // تحديث نص الزر
     applyBtn.textContent = 'Apply Settings';
 
-    // تحديث موضع الـ tooltip
     ccpTooltip.style.left = `${rect.left + (rect.width / 2)}px`;
     ccpTooltip.style.top = `${rect.top - 10}px`;
     ccpTooltip.style.transform = 'translate(-50%, -100%)';
@@ -390,7 +365,6 @@ function ccpHandleColorChange(e) {
     const newColor = e.target.value;
     ccpSelectedColor = newColor;
     
-    // تحديث عرض اللون المختار
     const colorPreview = document.getElementById('ccp-color-preview');
     const previewText = document.getElementById('ccp-preview-text');
     
@@ -402,7 +376,6 @@ function ccpHandleColorChange(e) {
         previewText.classList.remove('ccp-no-color-text');
     }
     
-    // إخفاء رسالة الخطأ
     const errorMessage = document.getElementById('ccp-error-message');
     if (errorMessage) {
         errorMessage.textContent = '';
@@ -426,14 +399,12 @@ async function ccpHandleApplySettings(e) {
     const applyBtn = e.target;
     const errorMessage = document.getElementById('ccp-error-message');
     
-    // التحقق من وجود زر مختار
     if (!ccpClickedButton) {
         errorMessage.textContent = 'Please click an animation button first';
         errorMessage.style.display = 'block';
         return;
     }
     
-    // التحقق من وجود لون مختار
     if (!ccpSelectedColor) {
         const randomMessage = ccpGetRandomError();
         errorMessage.textContent = randomMessage;
@@ -450,10 +421,8 @@ async function ccpHandleApplySettings(e) {
     applyBtn.textContent = 'Applying...';
 
     try {
-        // تحديث السطوع أولاً
         await ccpUpdateBrightness(ccpBrightness);
         
-        // تشغيل الأنيميشن مع اللون المختار
         await ccpStartAnimation(ccpClickedButton, ccpSelectedColor);
         
         ccpHideTooltip();
@@ -475,7 +444,6 @@ async function ccpHandleApplySettings(e) {
     }, 1000);
 }
 
-// دالة لتحديث السطوع
 async function ccpUpdateBrightness(brightness) {
     console.log(`Updating brightness to: ${brightness}%`);
     
@@ -496,7 +464,6 @@ async function ccpUpdateBrightness(brightness) {
     }
 }
 
-// دالة لتشغيل الأنيميشن مع تحديث فوري
 async function ccpStartAnimation(buttonId, color) {
     console.log(`Starting animation for: ${buttonId} with color: ${color}`);
     
@@ -507,7 +474,6 @@ async function ccpStartAnimation(buttonId, color) {
     }
     
     try {
-        // إرسال طلب الأنيميشن الجديد
         const result = await ccpSendRequest("/animate", {
             animation_type: animationType,
             hex_color: color
@@ -516,7 +482,6 @@ async function ccpStartAnimation(buttonId, color) {
         if (result.status === "queued") {
             console.log("Animation started successfully");
             
-            // تحديث واجهة المستخدم فوراً
             ccpUpdateUIState(buttonId, animationType);
             
             return true;
@@ -529,9 +494,7 @@ async function ccpStartAnimation(buttonId, color) {
     }
 }
 
-// دالة لتحديث حالة واجهة المستخدم
 function ccpUpdateUIState(buttonId, animationType) {
-    // إزالة الحالة النشطة من جميع الأزرار أولاً
     const allButtons = document.querySelectorAll('.button-container button');
     allButtons.forEach(btn => {
         btn.classList.remove('active');
@@ -539,14 +502,12 @@ function ccpUpdateUIState(buttonId, animationType) {
         btn.textContent = originalText;
     });
     
-    // إضافة الحالة النشطة للزر الحالي
     const currentButton = document.getElementById(buttonId);
     if (currentButton) {
         currentButton.classList.add('active');
         currentButton.textContent = currentButton.textContent.replace(' (Running)', '') + ' (Running)';
     }
     
-    // تحديث عرض اللون
     const colorDisplay = document.getElementById('colorDisplay');
     if (colorDisplay) {
         colorDisplay.textContent = animationType.replace('_', ' ').toUpperCase();
@@ -556,7 +517,6 @@ function ccpUpdateUIState(buttonId, animationType) {
     console.log('UI updated for animation:', animationType);
 }
 
-// دالة لتحويل buttonId إلى animation type
 function ccpGetAnimationType(buttonId) {
     const animationMap = {
         'customFadeBtn': 'custom_fade',
@@ -586,7 +546,6 @@ function ccpGetAnimationType(buttonId) {
     return animationMap[buttonId] || null;
 }
 
-// دالة مساعدة لإرسال الطلبات
 async function ccpSendRequest(endpoint, data) {
     const API_BASE_URL = `http://${window.location.hostname}:8000`;
     try {
@@ -615,7 +574,6 @@ async function ccpSendRequest(endpoint, data) {
     }
 }
 
-// دالة لتوليد ألوان عشوائية
 function ccpGenerateRandomColors() {
     const hue1 = Math.floor(Math.random() * 360);
     const hue2 = (hue1 + 120 + Math.floor(Math.random() * 60) - 30) % 360;
@@ -628,5 +586,4 @@ function ccpGenerateRandomColors() {
     ];
 }
 
-// استدعاء التهيئة عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', ccpInit);

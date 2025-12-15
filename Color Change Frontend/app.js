@@ -2,7 +2,6 @@
 
 const API_BASE_URL = `http://${window.location.hostname}:8000`;
 
-// DOM Elements
 const colorDisplay              = document.getElementById('colorDisplay');
 const offBtn                    = document.getElementById('offBtn');
 const off2Btn                   = document.getElementById('off2Btn');
@@ -11,7 +10,6 @@ const cardElement               = document.querySelector('.card');
 let isAnimationRunning          = false;
 let currentAnim                 = null;
 
-// أزرار الانيميشن الجاهزه
 const lightOneBtn               = document.getElementById('lightOneBtn');
 const waveEffectBtn             = document.getElementById('WaveEffectBtn');
 const rainbowFlowBtn            = document.getElementById('RainbowFlowBtn');
@@ -25,7 +23,6 @@ const pulseSyncBtn              = document.getElementById('PulseSyncBtn');
 const fireworksBurstBtn         = document.getElementById('FireworksBurstBtn');
 const customBreathingBtn        = document.getElementById('customBreathingBtn');
 
-// Custom Animation
 const customFadeBtn             = document.getElementById('customFadeBtn');
 const customBlinkBtn            = document.getElementById('customBlinkBtn');
 const customBreathingBtn2       = document.getElementById('customBreathingBtn');
@@ -50,23 +47,19 @@ const customRunningLightsBtn2   = document.getElementById('customRunningLightsBt
 const customFireworksBurstBtn   = document.getElementById('customFireworksBurstBtn');
 
 
-// Add click event listener to the color ring to show the color picker
 document.querySelector('.color-ring').addEventListener('click', function() {
     const colorPicker = document.getElementById('colorPicker');
     colorPicker.style.display = 'block';
     colorPicker.focus();
-    colorPicker.click(); // This immediately opens the color picker dialog
+    colorPicker.click(); 
 });
 
-// Hide color picker when it loses focus (user selects a color or clicks away)
 document.getElementById('colorPicker').addEventListener('blur', function() {
-    // Use setTimeout to ensure the color selection is processed before hiding
     setTimeout(() => {
         this.style.display = 'none';
     }, 100);
 });
 
-// Alternative: Also hide when color change is complete
 document.getElementById('colorPicker').addEventListener('change', function() {
     setTimeout(() => {
         this.style.display = 'none';
@@ -74,7 +67,6 @@ document.getElementById('colorPicker').addEventListener('change', function() {
 });
 
 
-// دالة مساعدة يمكن استخدامها من الملفات الأخرى
 function sendRequest(endpoint, data) {
     const API_BASE_URL = `http://${window.location.hostname}:8000`;
     try {
@@ -107,51 +99,8 @@ function sendRequest(endpoint, data) {
     }
 }
 
-// جعل الدالة متاحة globally
 window.sendRequest = sendRequest;
 
-// دالة مساعدة للتوافق مع النظام الجديد
-// function getGlobalSendRequest() {
-//     return function(endpoint, data) {
-//         const API_BASE_URL = `http://${window.location.hostname}:8000`;
-//         try {
-//             console.log('Sending request to:', endpoint, 'with data:', data);
-            
-//             return fetch(`${API_BASE_URL}${endpoint}`, {
-//                 method: "POST",
-//                 headers: { 
-//                     "Content-Type": "application/json",
-//                     "Accept": "application/json"
-//                 },
-//                 body: JSON.stringify(data)
-//             })
-//             .then(res => {
-//                 if (!res.ok) {
-//                     const errorText = res.text();
-//                     console.error(`HTTP error! status: ${res.status}, response:`, errorText);
-//                     throw new Error(`HTTP error! status: ${res.status}`);
-//                 }
-//                 return res.json();
-//             })
-//             .then(result => {
-//                 console.log('Request successful:', result);
-//                 return result;
-//             });
-            
-//         } catch (e) {
-//             console.error("API Error:", e);
-//             return Promise.resolve({ status: "error", message: e.message });
-//         }
-//     };
-// }
-
-// // جعل الدالة متاحة globally
-// if (typeof window !== 'undefined') {
-//     window.sendRequest = getGlobalSendRequest();
-// }
-
-
-// دالة مساعدة محسنة لإرسال طلبات الأنيميشن
 async function sendAnimationRequest(endpoint, data) {
     try {
         console.log('Sending animation request:', { endpoint, data });
@@ -185,7 +134,6 @@ async function sendAnimationRequest(endpoint, data) {
     }
 }
 
-// دالة محسنة لإرسال طلبات POST
 async function sendRequest(endpoint, data) {
     try {
         console.log('Sending request to:', endpoint, 'with data:', data);
@@ -215,7 +163,6 @@ async function sendRequest(endpoint, data) {
     }
 }
 
-// جلب الحالة الحالية من /state وتحديث الواجهة
 async function fetchAndApplyState() {
     try {
         const res = await fetch(`${API_BASE_URL}/state`);
@@ -230,7 +177,6 @@ async function fetchAndApplyState() {
             cardElement.style.background = "";
         }
 
-        // ——— Fade Colors ———
         if (animation === "fade_colors") {
             isAnimationRunning = true;
             currentAnim = "fade_colors";
@@ -243,7 +189,6 @@ async function fetchAndApplyState() {
             lightOneBtn.textContent = 'Fade Colors';
         }
 
-        // ——— Pulse Sync ———
         if (animation === "pulse_sync") {
             isAnimationRunning = true;
             currentAnim = "pulse_sync";
@@ -256,7 +201,6 @@ async function fetchAndApplyState() {
             pulseSyncBtn.textContent = 'Pulse Sync';
         }
 
-        // ——— Wave Effect ———
         if (animation === "wave_effect") {
             isAnimationRunning = true;
             currentAnim = "wave_effect";
@@ -269,7 +213,6 @@ async function fetchAndApplyState() {
             waveEffectBtn.textContent = 'Wave Effect';
         }
 
-        // ——— Rainbow Flow ———
         if (animation === "rainbow_flow") {
             isAnimationRunning = true;
             currentAnim = "rainbow_flow";
@@ -282,7 +225,6 @@ async function fetchAndApplyState() {
             rainbowFlowBtn.textContent = 'Rainbow Flow';
         }
 
-        // ——— Blinking Pattern ———
         if (animation === "blinking_pattern") {
             isAnimationRunning = true;
             currentAnim = "blinking_pattern";
@@ -295,7 +237,6 @@ async function fetchAndApplyState() {
             blinkingPatternBtn.textContent = 'Blinking Pattern';
         }
 
-        // ——— Running Lights ———
         if (animation === "running_lights") {
             isAnimationRunning = true;
             currentAnim = "running_lights";
@@ -308,7 +249,6 @@ async function fetchAndApplyState() {
             runningLightsBtn.textContent = 'Running Lights';
         }
 
-        // ——— Breathing Effect ———
         if (animation === "breathing_effect") {
             isAnimationRunning = true;
             currentAnim = "breathing_effect";
@@ -321,7 +261,6 @@ async function fetchAndApplyState() {
             breathingEffectBtn.textContent = 'Breathing Effect';
         }
 
-        // ——— Snakes Chasing ( Meteor Shower) ———
         if (animation === "meteor_shower") {
             isAnimationRunning = true;
             currentAnim = "meteor_shower";
@@ -333,7 +272,6 @@ async function fetchAndApplyState() {
             snakesChasingBtn.classList.remove('active');
             snakesChasingBtn.textContent = 'Snakes Chasing';
         }
-        // ----------- Random Colors ----------
         if (animation === "random_colors") {
             isAnimationRunning = true;
             currentAnim = "random_colors";
@@ -346,7 +284,6 @@ async function fetchAndApplyState() {
             randomColorsBtn.textContent = 'Random Colors';
         }
 
-        // ———  single snake (New Meteor Shower) ———
         if (animation === "single_snake") {
             isAnimationRunning = true;
             currentAnim = "single_snake";
@@ -359,7 +296,6 @@ async function fetchAndApplyState() {
             meteorShowerNewBtn.textContent = 'Meteor Shower';
         }
 
-        // ——— Fireworks Burst ———
         if (animation === "fireworks_burst") {
             isAnimationRunning = true;
             currentAnim = "fireworks_burst";
@@ -372,7 +308,6 @@ async function fetchAndApplyState() {
             fireworksBurstBtn.textContent = 'Fireworks Burst';
         }
 
-        // ────  Custom Fade Colors ────
         if (animation === "custom_fade") {
             isAnimationRunning = true;
             currentAnim = "custom_fade";
@@ -385,7 +320,6 @@ async function fetchAndApplyState() {
             customFadeBtn.textContent = 'Fade Colors - Custom';
         }
 
-        // ────  Custom Blinking ────
         if (animation === "custom_blink") {
             isAnimationRunning = true;
             currentAnim = "custom_blink";
@@ -398,7 +332,6 @@ async function fetchAndApplyState() {
             customBlinkBtn.textContent = 'Blinking - Custom';
         }
 
-        // ────  Custom Breathing ────
         if (animation === "custom_breathing") {
             isAnimationRunning = true;
             currentAnim = "custom_breathing";
@@ -411,7 +344,6 @@ async function fetchAndApplyState() {
             customBreathingBtn2.textContent = 'Breathing Effect - Custom';
         }
 
-        // ────  Custom Meteor Shower ────
         if (animation === "custom_meteor_shower") {
             isAnimationRunning = true;
             currentAnim = "custom_meteor_shower";
@@ -424,7 +356,6 @@ async function fetchAndApplyState() {
             customMeteorShowerBtn.textContent = 'Meteor Shower';
         }
 
-        // ────  Custom Pulse Sync ────
         if (animation === "custom_pulse_sync") {
             isAnimationRunning = true;
             currentAnim = "custom_pulse_sync";
@@ -437,7 +368,6 @@ async function fetchAndApplyState() {
             customPulseSyncBtn.textContent = 'Pulse Sync';
         }
 
-        // ──── Custom Glitch Flash ────
         if (animation === "custom_glitch_flash") {
             isAnimationRunning = true;
             currentAnim = "custom_glitch_flash";
@@ -450,7 +380,6 @@ async function fetchAndApplyState() {
             customGlitchFlashBtn.textContent = 'Glitch Flash';
         }
 
-        // ────  Custom Heart Beat ────
         if (animation === "custom_heart_beat") {
             isAnimationRunning = true;
             currentAnim = "custom_heart_beat";
@@ -463,7 +392,6 @@ async function fetchAndApplyState() {
             customHeartBeatBtn.textContent = 'Heart Beat';
         }
 
-        // ────  Custom Tunnel Effect ────
         if (animation === "custom_tunnel_effect") {
             isAnimationRunning = true;
             currentAnim = "custom_tunnel_effect";
@@ -476,7 +404,6 @@ async function fetchAndApplyState() {
             customTunnelEffectBtn.textContent = 'Tunnel Effect';
         }
 
-        // ────  Custom Laser Shot ────
         if (animation === "custom_laser_shot") {
             isAnimationRunning = true;
             currentAnim = "custom_laser_shot";
@@ -489,7 +416,6 @@ async function fetchAndApplyState() {
             customLaserShotBtn.textContent = 'Laser Shot';
         }
 
-        // ────  Custom Sparkling Stars ────
         if (animation === "custom_sparkling_stars") {
             isAnimationRunning = true;
             currentAnim = "custom_sparkling_stars";
@@ -502,7 +428,6 @@ async function fetchAndApplyState() {
             customSparklingStarsBtn.textContent = 'Sparkling Stars';
         }
 
-        // ────  Custom Strobe Flash ────
         if (animation === "custom_strobe_flash") {
             isAnimationRunning = true;
             currentAnim = "custom_strobe_flash";
@@ -515,7 +440,6 @@ async function fetchAndApplyState() {
             customStrobeFlashBtn.textContent = 'Strobe Flash';
         }
 
-        // ────  Custom Knight Rider ────
         if (animation === "custom_knight_rider") {
             isAnimationRunning = true;
             currentAnim = "custom_knight_rider";
@@ -528,7 +452,6 @@ async function fetchAndApplyState() {
             customKnightRiderBtn.textContent = 'Knight Rider';
         }
 
-        // ────  Custom Bounce Back ────
         if (animation === "custom_bounce_back") {
             isAnimationRunning = true;
             currentAnim = "custom_bounce_back";
@@ -541,7 +464,6 @@ async function fetchAndApplyState() {
             customBounceBackBtn.textContent = 'Bounce Back';
         }
 
-        // ────  Custom Ripple Touch ────
         if (animation === "custom_ripple_touch") {
             isAnimationRunning = true;
             currentAnim = "custom_ripple_touch";
@@ -554,7 +476,6 @@ async function fetchAndApplyState() {
             customRippleTouchBtn.textContent = 'Ripple Touch';
         }
 
-        // ────  Custom Fire Flicker ────
         if (animation === "custom_fire_flicker") {
             isAnimationRunning = true;
             currentAnim = "custom_fire_flicker";
@@ -567,7 +488,6 @@ async function fetchAndApplyState() {
             customFireFlickerBtn.textContent = 'Fire Flicker';
         }
 
-        // ────  Custom Color Wipe ────
         if (animation === "custom_color_wipe") {
             isAnimationRunning = true;
             currentAnim = "custom_color_wipe";
@@ -580,7 +500,6 @@ async function fetchAndApplyState() {
             customColorWipeBtn.textContent = 'Color Wipe';
         }
 
-        // ────  Custom Static Glow with Flicker ────
         if (animation === "custom_static_glow") {
             isAnimationRunning = true;
             currentAnim = "custom_static_glow";
@@ -593,7 +512,6 @@ async function fetchAndApplyState() {
             customStaticGlowBtn.textContent = 'Static Glow with Flicker';
         }
 
-        // ────  Custom Color Echo ────
         if (animation === "custom_color_echo") {
             isAnimationRunning = true;
             currentAnim = "custom_color_echo";
@@ -606,7 +524,6 @@ async function fetchAndApplyState() {
             customColorEchoBtn.textContent = 'Color Echo';
         }
 
-        // ──── Custom Time Warp ────
         if (animation === "custom_time_warp") {
             isAnimationRunning = true;
             currentAnim = "custom_time_warp";
@@ -619,7 +536,6 @@ async function fetchAndApplyState() {
             customTimeWarpBtn.textContent = 'Time Warp';
         }
 
-        // ────  Custom Quantum Flicker ────
         if (animation === "custom_quantum_flicker") {
             isAnimationRunning = true;
             currentAnim = "custom_quantum_flicker";
@@ -632,7 +548,6 @@ async function fetchAndApplyState() {
             customQuantumFlickerBtn.textContent = 'Quantum Flicker';
         }
 
-        // ────  Custom Running Lights ────
         if (animation === "custom_running_lights") {
             isAnimationRunning = true;
             currentAnim = "custom_running_lights";
@@ -645,7 +560,6 @@ async function fetchAndApplyState() {
             customRunningLightsBtn2.textContent = 'Running Lights';
         }
 
-        // Custom fireworks Burst
         if (animation === "custom_fireworks_burst") {
             isAnimationRunning = true;
             currentAnim = "custom_fireworks_burst";
@@ -664,7 +578,6 @@ async function fetchAndApplyState() {
         updateUI('#000000');
         isAnimationRunning = false;
         currentAnim = null;
-        // إزالة أي حالة نشطة على الأزرار
         lightOneBtn.classList.remove('active');
         lightOneBtn.textContent = 'Fade Colors';
         pulseSyncBtn.classList.remove('active');
@@ -733,7 +646,6 @@ async function fetchAndApplyState() {
     }
 }
 
-// دالة تغيير اللون الثابت
 async function changeColor(color) {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -745,11 +657,9 @@ async function changeColor(color) {
     await sendRequest("/color", { hex_color: color });
 }
 
-// دالة إيقاف الأنيميشن (POST /stop)
 async function stopAnimation() {
     isAnimationRunning = false;
     currentAnim = null;
-    // ازاله الحالة النشطة من كل الأزرار 
     lightOneBtn.classList.remove('active');
     lightOneBtn.textContent = 'Fade Colors';
     pulseSyncBtn.classList.remove('active');
@@ -821,9 +731,7 @@ async function stopAnimation() {
     await sendRequest("/stop", {});
 }
 
-// ——— الدوال التي تشغل الانيميشنات ———
 
-// Fade Colors
 async function startFadeAnimation(speed = 1) {
     if (isAnimationRunning && currentAnim !== "fade_colors") {
         await stopAnimation();
@@ -845,7 +753,6 @@ async function startFadeAnimation(speed = 1) {
 }
 
 
-// Pulse Sync
 async function startPulseSyncAnimation(speed = 1) {
     if (isAnimationRunning && currentAnim !== "pulse_sync") {
         await stopAnimation();
@@ -865,7 +772,6 @@ async function startPulseSyncAnimation(speed = 1) {
         speed_factor: speed });
 }
 
-// Wave Effect
 async function startWaveAnimation(speed = 1) {
     if (isAnimationRunning && currentAnim !== "wave_effect") {
         await stopAnimation();
@@ -887,7 +793,6 @@ async function startWaveAnimation(speed = 1) {
 }
 
 
-// Rainbow Flow
 async function startRainbowAnimation(speed = 1 ) {
     if (isAnimationRunning && currentAnim !== "rainbow_flow") {
         await stopAnimation();
@@ -907,7 +812,6 @@ async function startRainbowAnimation(speed = 1 ) {
         speed_factor: speed });
 }
 
-// Blinking Pattern
 async function startBlinkingPattern(speed = 1) {
     if (isAnimationRunning && currentAnim !== "blinking_pattern") {
         await stopAnimation();
@@ -927,7 +831,6 @@ async function startBlinkingPattern(speed = 1) {
         speed_factor: speed });
 }
 
-// Running Lights
 async function startRunningLights(speed = 1) {
     if (isAnimationRunning && currentAnim !== "running_lights") {
         await stopAnimation();
@@ -947,7 +850,6 @@ async function startRunningLights(speed = 1) {
         speed_factor: speed });
 }
 
-// Breathing Effect
 async function startBreathingAnimation(speed = 1) {
     if (isAnimationRunning && currentAnim !== "breathing_effect") {
         await stopAnimation();
@@ -967,7 +869,6 @@ async function startBreathingAnimation(speed = 1) {
         speed_factor: speed });
 }
 
-// Snakes Chasing ( Meteor Shower)
 async function startSnakesChasing(speed = 1) {
     if (isAnimationRunning && currentAnim !== "meteor_shower") {
         await stopAnimation();
@@ -987,7 +888,6 @@ async function startSnakesChasing(speed = 1) {
         speed_factor: speed });
 }
 
-// ———   “Meteor Shower” (الأفعى الوحيدة) ———
 async function startSingleSnake(speed = 1) {
     if (isAnimationRunning && currentAnim !== "single_snake") {
         await stopAnimation();
@@ -1026,7 +926,6 @@ async function startRandomColors(speed = 1) {
         speed_factor: speed });
 }
 
-// Fireworks Burst
 async function startFireworksBurst(speed = 1) {
     if (isAnimationRunning && currentAnim !== "fireworks_burst") {
         await stopAnimation();
@@ -1046,7 +945,6 @@ async function startFireworksBurst(speed = 1) {
         speed_factor: speed });
 }
 
-// ────   “Fade Colors (Custom)” ────
 async function startCustomFadeAnimation() {
 
     if (isAnimationRunning && currentAnim === "custom_fade") {
@@ -1057,33 +955,25 @@ async function startCustomFadeAnimation() {
     if (isAnimationRunning && currentAnim !== "custom_fade") {
         await stopAnimation();
     }
-    //  طلب من المستخدم اختيار اللون:
     customFadeBtn.textContent = "Choose color…";
-    // opens نافذة color picker برمجياً:
     // colorPicker.click();
-    // نُعدّ مستمعاً وحيداً لحدث "input" على colorPicker
     const onColorChosen = async (e) => {
-        // أولاً ننظف (نزيل) هذا المستمع
         colorPicker.removeEventListener("input", onColorChosen);
-        const chosenColor = e.target.value; // اللون الذي اخترته
-        // نضع UI على وضع التشغيل
+        const chosenColor = e.target.value; 
         isAnimationRunning = true;
         currentAnim = "custom_fade";
         customFadeBtn.classList.add('active');
         customFadeBtn.textContent = 'Fade Colors - Custom (Running)';
         cardElement.style.background = "#000000";
         colorDisplay.textContent = "Fade Colors - Custom";
-        // نرسل طلب بدء أنيميشن custom_fade مع الـ hex_color الذي اخترته
         await sendRequest("/animate", {
             animation_type: "custom_fade",
             hex_color: chosenColor
         });
     };
-    // نضيف مستمع input على colorPicker
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ──── دالة “Blinking Pattern (Custom)” ────
 async function startCustomBlinkAnimation() {
     if (isAnimationRunning && currentAnim === "custom_blink") {
         await stopAnimation();
@@ -1111,7 +1001,6 @@ async function startCustomBlinkAnimation() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ───  دالة “Breathing Effect (Custom)” ───
 async function startCustomBreathingAnimation() {
     if (isAnimationRunning && currentAnim === "custom_breathing") {
         await stopAnimation();
@@ -1139,7 +1028,6 @@ async function startCustomBreathingAnimation() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Meteor Shower (Custom)” ───
 async function startCustomMeteorShower() {
     if (isAnimationRunning && currentAnim === "custom_meteor_shower") {
         await stopAnimation();
@@ -1167,7 +1055,6 @@ async function startCustomMeteorShower() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Pulse Sync (Custom)” ───
 async function startCustomPulseSync() {
     if (isAnimationRunning && currentAnim === "custom_pulse_sync") {
         await stopAnimation();
@@ -1195,7 +1082,6 @@ async function startCustomPulseSync() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ──── دالة “Glitch Flash (Custom)” ───
 async function startCustomGlitchFlash() {
     if (isAnimationRunning && currentAnim === "custom_glitch_flash") {
         await stopAnimation();
@@ -1223,7 +1109,6 @@ async function startCustomGlitchFlash() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Heart Beat (Custom)” ───
 async function startCustomHeartBeat() {
     if (isAnimationRunning && currentAnim === "custom_heart_beat") {
         await stopAnimation();
@@ -1251,7 +1136,6 @@ async function startCustomHeartBeat() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Tunnel Effect (Custom)” ───
 async function startCustomTunnelEffect() {
     if (isAnimationRunning && currentAnim === "custom_tunnel_effect") {
         await stopAnimation();
@@ -1279,7 +1163,6 @@ async function startCustomTunnelEffect() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ──── دالة “Laser Shot (Custom)” ───
 async function startCustomLaserShot() {
     if (isAnimationRunning && currentAnim === "custom_laser_shot") {
         await stopAnimation();
@@ -1307,7 +1190,6 @@ async function startCustomLaserShot() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Sparkling Stars (Custom)” ───
 async function startCustomSparklingStars() {
     if (isAnimationRunning && currentAnim === "custom_sparkling_stars") {
         await stopAnimation();
@@ -1335,7 +1217,6 @@ async function startCustomSparklingStars() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Strobe Flash (Custom)” ───
 async function startCustomStrobeFlash() {
     if (isAnimationRunning && currentAnim === "custom_strobe_flash") {
         await stopAnimation();
@@ -1363,7 +1244,6 @@ async function startCustomStrobeFlash() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Knight Rider (Custom)” ───
 async function startCustomKnightRider() {
     if (isAnimationRunning && currentAnim === "custom_knight_rider") {
         await stopAnimation();
@@ -1391,7 +1271,6 @@ async function startCustomKnightRider() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Bounce Back (Custom)” ───
 async function startCustomBounceBack() {
     if (isAnimationRunning && currentAnim === "custom_bounce_back") {
         await stopAnimation();
@@ -1419,7 +1298,6 @@ async function startCustomBounceBack() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Ripple Touch (Custom)” ───
 async function startCustomRippleTouch() {
     if (isAnimationRunning && currentAnim === "custom_ripple_touch") {
         await stopAnimation();
@@ -1447,7 +1325,6 @@ async function startCustomRippleTouch() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ──── دالة “Fire Flicker (Custom)” ───
 async function startCustomFireFlicker() {
     if (isAnimationRunning && currentAnim === "custom_fire_flicker") {
         await stopAnimation();
@@ -1475,7 +1352,6 @@ async function startCustomFireFlicker() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ──── دالة “Color Wipe (Custom)” ───
 async function startCustomColorWipe() {
     if (isAnimationRunning && currentAnim === "custom_color_wipe") {
         await stopAnimation();
@@ -1503,7 +1379,6 @@ async function startCustomColorWipe() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Static Glow with Flicker (Custom)” ───
 async function startCustomStaticGlow() {
     if (isAnimationRunning && currentAnim === "custom_static_glow") {
         await stopAnimation();
@@ -1531,7 +1406,6 @@ async function startCustomStaticGlow() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ──── دالة “Color Echo (Custom)” ───
 async function startCustomColorEcho() {
     if (isAnimationRunning && currentAnim === "custom_color_echo") {
         await stopAnimation();
@@ -1559,7 +1433,6 @@ async function startCustomColorEcho() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Time Warp (Custom)” ───
 async function startCustomTimeWarp() {
     if (isAnimationRunning && currentAnim === "custom_time_warp") {
         await stopAnimation();
@@ -1587,7 +1460,6 @@ async function startCustomTimeWarp() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Quantum Flicker (Custom)” ───
 async function startCustomQuantumFlicker() {
     if (isAnimationRunning && currentAnim === "custom_quantum_flicker") {
         await stopAnimation();
@@ -1615,7 +1487,6 @@ async function startCustomQuantumFlicker() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// ────  دالة “Running Lights (Custom)” ───
 async function startCustomRunningLights() {
     if (isAnimationRunning && currentAnim === "custom_running_lights") {
         await stopAnimation();
@@ -1643,7 +1514,6 @@ async function startCustomRunningLights() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
-// Custom Fireworks Burst
 async function startCustomFireworksBurst() {
     if (isAnimationRunning && currentAnim === "custom_fireworks_burst") {
         await stopAnimation();
@@ -1672,7 +1542,6 @@ async function startCustomFireworksBurst() {
 }
 
 
-// تحديث الواجهة إلى اللون المعطى
 function updateUI(color) {
     document.body.style.background     = color;
     document.body.style.boxShadow      = `0 0 80px ${color}80 inset`;
@@ -1681,7 +1550,6 @@ function updateUI(color) {
     colorPicker.value                  = color;
 }
 
-// ربط الأحداث
 lightOneBtn             .addEventListener("click", startFadeAnimation);
 pulseSyncBtn            .addEventListener("click", startPulseSyncAnimation);
 waveEffectBtn           .addEventListener("click", startWaveAnimation);
@@ -1719,34 +1587,26 @@ customRunningLightsBtn2 .addEventListener("click", startCustomRunningLights);
 customFireworksBurstBtn .addEventListener("click", startCustomFireworksBurst);
 
 
-// عند تغيير اللون عبر Color Picker
 colorPicker.addEventListener("input", e => {
     changeColor(e.target.value);
 });
 
-// === Color picker: local preview + debounced server update ===
 (() => {
-  const DEBOUNCE_MS = 700; // وقت الانتظار بعد آخر حركة قبل الإرسال
+  const DEBOUNCE_MS = 700;
   let colorDebounceTimer = null;
   let lastSentColor = null;
 
-  // Preview local UI immediately while user drags
   function previewColor(hex) {
-    // فقط تحديث الواجهة المحلية — لا نرسل للسيرفر هنا
     updateUI(hex);
   }
 
-  // Called when we decide user "stopped" — do the real send
   async function commitColor(hex) {
     if (!hex) return;
-    // تجنّب الإعادة لو نفس اللون كان مرسل من قبل
     if (lastSentColor === hex) return;
     lastSentColor = hex;
-    // changeColor يوقّف الأنيميشن لو شغّال ثم يرسل POST /color
     await changeColor(hex);
   }
 
-  // on input: preview + restart debounce
   colorPicker.addEventListener('input', (e) => {
     const hex = e.target.value;
     previewColor(hex);
@@ -1758,7 +1618,6 @@ colorPicker.addEventListener("input", e => {
     }, DEBOUNCE_MS);
   });
 
-  // on change (some browsers fire this at end) -> commit immediately
   colorPicker.addEventListener('change', (e) => {
     const hex = e.target.value;
     if (colorDebounceTimer) {
@@ -1768,9 +1627,7 @@ colorPicker.addEventListener("input", e => {
     commitColor(hex);
   });
 
-  // pointerup/touchend for safety (user lifts finger) -> commit
   colorPicker.addEventListener('pointerup', (e) => {
-    // Some browsers don't fire 'change' reliably for input[type=color]
     const hex = colorPicker.value;
     if (colorDebounceTimer) {
       clearTimeout(colorDebounceTimer);
@@ -1779,7 +1636,6 @@ colorPicker.addEventListener("input", e => {
     commitColor(hex);
   }, { passive: true });
 
-  // optional: if user navigates away, clear timer
   window.addEventListener('beforeunload', () => {
     if (colorDebounceTimer) {
       clearTimeout(colorDebounceTimer);
@@ -1789,13 +1645,11 @@ colorPicker.addEventListener("input", e => {
 })();
 
 
-// عند تحميل الصفحة أول مرة
 document.addEventListener("DOMContentLoaded", async () => {
     await fetchAndApplyState();
     setInterval(fetchAndApplyState, 2000);
 });
 
-// SSE لدفع الحالة تلقائيًا
 const evtSource = new EventSource(`${API_BASE_URL}/stream`);
 evtSource.onmessage = e => {
     try {
@@ -1941,7 +1795,6 @@ evtSource.onmessage = e => {
             fireworksBurstBtn.textContent = 'Fireworks Burst';
         }
 
-        // ──── Custom Animation ────
 
         if (animation === "custom_fade") {
             isAnimationRunning = true;
@@ -2215,7 +2068,6 @@ evtSource.onmessage = e => {
 
 
 
-// تكويد النجوم المتوهجة
 document.addEventListener("DOMContentLoaded", function () {
     const starsContainer = document.querySelector(".stars-container");
     for (let i = 0; i < 7; i++) {
@@ -2234,7 +2086,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-/* === Helper: hex -> "r,g,b" === */
 function hexToRgbString(hex) {
   if (!hex) return '0,0,0';
   hex = hex.replace('#','').trim();
@@ -2283,29 +2134,22 @@ function getCurrentColor() {
 function playCardOverlay() {
   const card = document.querySelector('.card');
   if (!card) return;
-  // نضبط اللون الحالي
   setUIColor(getCurrentColor());
-  // نضيف الكلاس اللي يشغل overlay
   card.classList.add('card-overlay');
-    // إزالة الكلاس بعد انتهاء الانتقال
     setTimeout(() => {
         card.classList.remove('card-overlay');
     }, 500);
-  // نشيل الكلاس بعد ما يخلص الانيميشن عشان يقدر يعيد التشغيل بالـreload
   card.addEventListener('animationend', () => {
     card.classList.remove('card-overlay');
   }, { once: true });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  //  overlay بنفس اللون الحالي
   setUIColor(getCurrentColor());
 
   const overlay = document.getElementById('page-overlay');
   if (overlay) {
-    // شغل الانيميشن فوراt
     overlay.classList.add('fade-out');
-    // بعد الانيميشن نشيل العنصر من الـDOM
     overlay.addEventListener('animationend', () => {
       overlay.remove();
     });
@@ -2328,7 +2172,6 @@ function updateUI(color) {
         colorPicker.value              = '#000000';
     }
 
-    // هنا السطر اللي يربط overlay بالكارد
     const overlay = document.getElementById('page-overlay');
     if (overlay) {
         overlay.style.background = color || '#000000';

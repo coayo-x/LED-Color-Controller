@@ -1,9 +1,7 @@
 // tooltip.js
 
 
-// بيانات التلميحات لكل زر
 const tooltipData = {
-    // أزرار الألوان
     'redBtn'                    : { title: 'Red Color' },
     'blueBtn'                   : { title: 'Blue Color' },
     'greenBtn'                  : { title: 'Green Color' },
@@ -13,8 +11,6 @@ const tooltipData = {
     'whiteBtn'                  : { title: 'White Color' },
     'offBtn'                    : { title: 'Turn Off' },
     'off2Btn'                   : { title: 'Turn Off'},
-    
-    // أزرار الأنيميشن الأساسية
 
     'lightOneBtn'               : { title: 'Fade Colors' },
     'WaveEffectBtn'             : { title: 'Wave Effect' },
@@ -28,8 +24,6 @@ const tooltipData = {
     'FireworksBurstBtn'         : { title: 'Fireworks Burst' },
     'MeteorShowerNewBtn'        : { title: 'Meteor Shower' },
     
-
-    // أزرار الأنيميشن المخصصة  
     'customFadeBtn'             : { title: 'Custom Fade'},
     'customBlinkBtn'            : { title: 'Custom Blink'},
     'customBreathingBtn'        : { title: 'Custom Breathing' },
@@ -405,13 +399,11 @@ const RandomColorsDescriptions = [
     'Nothing yet'
 ]
 
-// تهيئة الـ Tooltip
 function initTooltips() {
     const tooltip = document.getElementById('animationTooltip');
     const tooltipTitle = document.getElementById('tooltipTitle');
     const tooltipDescription = document.getElementById('tooltipDescription');
 
-    // دالة لتوليد ألوان عشوائية زاهية 
     function generateRandomColors() {
         const hue1 = Math.floor(Math.random() * 360);
         const hue2 = (hue1 + 120 + Math.floor(Math.random() * 60) - 30) % 360;
@@ -677,12 +669,10 @@ function initTooltips() {
         return (tooltipData[buttonId] && tooltipData[buttonId].description) || '';
     }
 
-    // إضافة حدث لجميع الأزرار
     document.querySelectorAll('button').forEach(button => {
         const buttonId = button.id;
 
         if (tooltipData[buttonId]) {
-            // mouseenter
             button.addEventListener('mouseenter', (e) => {
                 const rect = button.getBoundingClientRect();
 
@@ -690,7 +680,6 @@ function initTooltips() {
 
                 tooltipDescription.textContent = getRandomDescriptionFor(buttonId);
 
-                // توليد ألوان عشوائية جديدة
                 const [color1, color2, color3] = generateRandomColors();
 
                 tooltip.style.setProperty('--random-color-1', color1);
@@ -709,7 +698,6 @@ function initTooltips() {
                 }
             });
 
-            // mouseleave
             button.addEventListener('mouseleave', () => {
                 tooltip.classList.remove('show');
             });
@@ -717,7 +705,4 @@ function initTooltips() {
     });
 }
 
-// استدعاء الدالة عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', initTooltips);
-
-

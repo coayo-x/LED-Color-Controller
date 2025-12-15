@@ -1,6 +1,5 @@
-// customcolors.js - UPDATED with 3-second hover delay
+// customcolors.js
 
-// بيانات التلميحات لأزرار الألوان
 const colorTooltipData = {
     'redBtn': { title: 'Red Color', color: '#ff0000' },
     'blueBtn': { title: 'Blue Color', color: '#0000ff' },
@@ -11,15 +10,13 @@ const colorTooltipData = {
     'whiteBtn': { title: 'White Color', color: '#FFFFFF' }
 };
 
-// متغيرات عالمية
 let currentTooltip = null;
 let currentBrightness = 25;
 let currentColorButton = null;
-let hoverTimeout = null; // NEW: For hover delay
-let tooltipShownByClick = false; // NEW: Track if tooltip was shown by click
-let isHovering = false; // NEW: Track hover state
+let hoverTimeout = null;
+let tooltipShownByClick = false;
+let isHovering = false; 
 
-// دالة لتحميل السطوع من localStorage
 function loadBrightnessFromStorage() {
     const savedBrightness = localStorage.getItem('ledBrightness');
     if (savedBrightness !== null) {
@@ -28,23 +25,18 @@ function loadBrightnessFromStorage() {
     }
 }
 
-// دالة لحفظ السطوع في localStorage
 function saveBrightnessToStorage(brightness) {
     localStorage.setItem('ledBrightness', brightness.toString());
     console.log('Saved brightness to storage:', brightness);
 }
 
-// تهيئة الـ Tooltip لأزرار الألوان
 function initColorTooltips() {
     console.log('Initializing color tooltips...');
     
-    // تحميل قيمة السطوع المحفوظة
     loadBrightnessFromStorage();
     
-    // إنشاء عنصر الـ tooltip إذا لم يكن موجوداً
     createTooltip();
     
-    // إضافة event listeners
     setupEventListeners();
 }
 
@@ -81,7 +73,6 @@ function createTooltip() {
 function setupEventListeners() {
     console.log('Setting up event listeners...');
     
-    // إضافة event listener للزر Apply
     document.addEventListener('click', function(e) {
         if (e.target && e.target.id === 'applyBrightness') {
             console.log('Apply button clicked');
@@ -89,7 +80,6 @@ function setupEventListeners() {
         }
     });
 
-    // إضافة event listener لعجلة الماوس على شريط السطوع
     document.addEventListener('wheel', function(e) {
         const slider = document.getElementById('brightnessSlider');
         if (slider && (e.target === slider || slider.contains(e.target))) {
@@ -99,7 +89,6 @@ function setupEventListeners() {
         }
     });
 
-    // إضافة event listener لسحب شريط التمرير
     document.addEventListener('input', function(e) {
         if (e.target && e.target.id === 'brightnessSlider') {
             console.log('Slider input changed');
@@ -107,7 +96,6 @@ function setupEventListeners() {
         }
     });
 
-    // إضافة event listeners لأزرار الألوان
     const colorButtons = document.querySelectorAll('.button-container button');
     console.log('Found color buttons:', colorButtons.length);
     
@@ -118,82 +106,67 @@ function setupEventListeners() {
         if (colorTooltipData[buttonId]) {
             console.log('Adding listeners to button:', buttonId);
             
-            // Add hover delay class for visual feedback
             button.classList.add('button-hover-delay');
             
-            // mouseenter على الزر - مع تأخير 3 ثواني
             button.addEventListener('mouseenter', (e) => {
                 console.log('Mouse enter on button:', buttonId);
                 isHovering = true;
                 
-                // Don't show if tooltip is already visible (except if shown by click)
                 if (currentTooltip && currentTooltip.classList.contains('show') && !tooltipShownByClick) {
                     return;
                 }
                 
-                // Clear any existing timeout
                 if (hoverTimeout) {
                     clearTimeout(hoverTimeout);
                     hoverTimeout = null;
                 }
                 
-                // Start 3-second delay for hover
                 hoverTimeout = setTimeout(() => {
                     console.log('3-second hover delay completed - showing tooltip');
-                    if (isHovering) { // Only show if still hovering
+                    if (isHovering) { 
                         tooltipShownByClick = false;
                         showTooltip(e.target, buttonId);
                     }
                     hoverTimeout = null;
-                }, 3000); // 3 seconds
+                }, 3000);
             });
 
-            // mouseleave على الزر
             button.addEventListener('mouseleave', (e) => {
                 console.log('Mouse leave from button:', buttonId);
                 isHovering = false;
                 
-                // Clear hover timeout
                 if (hoverTimeout) {
                     clearTimeout(hoverTimeout);
                     hoverTimeout = null;
                     console.log('Hover timeout cleared');
                 }
                 
-                // Only hide tooltip if it was shown by hover (not by click)
                 if (currentTooltip && currentTooltip.classList.contains('show') && !tooltipShownByClick) {
                     const relatedTarget = e.relatedTarget;
-                    // Check if mouse is moving to tooltip
                     if (!relatedTarget || (currentTooltip && !currentTooltip.contains(relatedTarget))) {
                         hideTooltip();
                     }
                 }
             });
 
-            // click على الزر - التطبيق التلقائي للسطوع مع عرض فوري
             button.addEventListener('click', (e) => {
                 console.log('Color button clicked - showing tooltip immediately');
                 e.stopPropagation();
                 
-                // Clear any hover timeout
                 if (hoverTimeout) {
                     clearTimeout(hoverTimeout);
                     hoverTimeout = null;
                 }
                 
-                // Set flag that tooltip was shown by click
                 tooltipShownByClick = true;
                 
-                // Show tooltip immediately
                 showTooltip(e.target, buttonId);
                 
-                // Also handle the color application
                 handleColorButtonClick(e.target, buttonId);
             });
         }
     });
 
-    // event listeners للـ tooltip نفسه
     if (currentTooltip) {
         currentTooltip.addEventListener('mouseenter', () => {
             console.log('Mouse enter on tooltip');
@@ -202,17 +175,14 @@ function setupEventListeners() {
 
         currentTooltip.addEventListener('mouseleave', () => {
             console.log('Mouse leave from tooltip');
-            // Only hide if tooltip was shown by hover (not by click)
             if (!tooltipShownByClick) {
                 hideTooltip();
             }
         });
     }
     
-    // NEW: Close tooltip when clicking outside
     document.addEventListener('click', function(e) {
         if (currentTooltip && currentTooltip.classList.contains('show')) {
-            // Check if click is outside the tooltip and not on a color button
             if (!currentTooltip.contains(e.target) && 
                 !e.target.closest('.button-container button[id]')) {
                 hideTooltip();
@@ -221,7 +191,6 @@ function setupEventListeners() {
         }
     });
     
-    // NEW: Clear hover timeout when window loses focus
     window.addEventListener('blur', function() {
         if (hoverTimeout) {
             clearTimeout(hoverTimeout);
@@ -230,7 +199,6 @@ function setupEventListeners() {
         isHovering = false;
     });
     
-    // NEW: Clear hover timeout on page unload
     window.addEventListener('beforeunload', function() {
         if (hoverTimeout) {
             clearTimeout(hoverTimeout);
@@ -265,22 +233,18 @@ function showTooltip(button, buttonId) {
 
     tooltipTitle.textContent = buttonData.title || '';
 
-    // توليد ألوان عشوائية جديدة
     const [color1, color2, color3] = generateRandomColors();
     currentTooltip.style.setProperty('--random-color-1', color1);
     currentTooltip.style.setProperty('--random-color-2', color2);
     currentTooltip.style.setProperty('--random-color-3', color3);
 
-    // تعيين اللون الحالي والسطوع
     currentTooltip.setAttribute('data-current-color', buttonData.color);
     currentTooltip.setAttribute('data-current-brightness', currentBrightness);
-    currentColorButton = buttonId; // حفظ الزر الحالي
+    currentColorButton = buttonId; 
 
-    // تحديث شريط التمرير وعرض القيمة
     brightnessSlider.value = currentBrightness;
     brightnessValue.textContent = `${currentBrightness}%`;
 
-    // تحديث موضع الـ tooltip
     currentTooltip.style.left = `${rect.left + (rect.width / 2)}px`;
     currentTooltip.style.top = `${rect.top - 10}px`;
     currentTooltip.style.transform = 'translate(-50%, -100%)';
@@ -292,7 +256,7 @@ function showTooltip(button, buttonId) {
 function hideTooltip() {
     if (currentTooltip) {
         currentTooltip.classList.remove('show');
-        tooltipShownByClick = false; // Reset flag
+        tooltipShownByClick = false; 
         console.log('Tooltip hidden');
     }
 }
@@ -311,7 +275,6 @@ function handleWheelBrightness(e, slider) {
         currentTooltip.setAttribute('data-current-brightness', newValue);
     }
     
-    // حفظ السطوع الجديد في localStorage
     saveBrightnessToStorage(newValue);
     
     console.log('Brightness changed to:', newValue + '%');
@@ -326,7 +289,6 @@ function handleSliderChange(e) {
         currentTooltip.setAttribute('data-current-brightness', newValue);
     }
     
-    // حفظ السطوع الجديد في localStorage
     saveBrightnessToStorage(newValue);
     
     console.log('Brightness slider changed to:', newValue + '%');
@@ -358,29 +320,23 @@ async function handleApplyBrightness(e) {
 
     console.log('Applying brightness:', brightness + '% to color:', currentColor);
 
-    // تعطيل الزر مؤقتاً وإخفاء الـ tooltip
     applyBtn.disabled = true;
 
     try {
-        // استخدام الدالة الجديدة التي تجمع بين السطوع واللون
         await applyBrightnessAndColor(currentColor, parseInt(brightness));
         
-        // إخفاء الـ tooltip بعد التطبيق الناجح
         hideTooltip();
     } catch (error) {
         console.error('Error applying brightness:', error);
-        // في حالة الخطأ، استخدم دالة changeColor العادية
         changeColor(currentColor);
     }
 
-    // إعادة تمكين الزر بعد 1 ثانية
     setTimeout(() => {
         applyBtn.disabled = false;
         console.log('Apply button re-enabled');
     }, 1000);
 }
 
-// دالة جديدة للتعامل مع النقر على أزرار الألوان
 async function handleColorButtonClick(button, buttonId) {
     console.log('Handling color button click:', buttonId);
     
@@ -390,18 +346,15 @@ async function handleColorButtonClick(button, buttonId) {
         return;
     }
 
-    // استخدام الدالة الجديدة التي تجمع السطوع واللون
     if (currentBrightness > 0) {
         console.log(`Applying ${currentBrightness}% brightness to color: ${buttonData.color}`);
         await applyBrightnessAndColor(buttonData.color, currentBrightness);
     } else {
-        // إذا لم يكن هناك سطوع محدد، نستخدم الوظيفة الأصلية
         console.log('No brightness set, using default behavior');
         changeColor(buttonData.color);
     }
 }
 
-// دالة لتوليد ألوان عشوائية زاهية 
 function generateRandomColors() {
     const hue1 = Math.floor(Math.random() * 360);
     const hue2 = (hue1 + 120 + Math.floor(Math.random() * 60) - 30) % 360;
@@ -414,34 +367,28 @@ function generateRandomColors() {
     ];
 }
 
-// دالة جديدة تجمع بين تعديل السطوع وتطبيق اللون
 async function applyBrightnessAndColor(color, brightness) {
     console.log(`Applying ${brightness}% brightness to color: ${color}`);
     
     try {
-        // أولاً تحديث السطوع في الـ backend
         const brightnessResult = await sendRequest("/set_brightness", { 
             brightness: brightness / 100 
         });
         
         if (brightnessResult.status === "brightness_updated") {
             console.log("Brightness updated successfully");
-            // ثم تطبيق اللون باستخدام الدالة الموجودة في app.js
             await changeColor(color);
         } else {
             console.error("Failed to update brightness:", brightnessResult);
-            // إذا فشل تحديث السطوع، طبق اللون فقط
             await changeColor(color);
         }
     } catch (error) {
         console.error("API Error:", error);
-        // في حالة الخطأ، طبق اللون فقط
         await changeColor(color);
         throw error;
     }
 }
 
-// دالة مساعدة لإرسال الطلبات مع معالجة CORS
 async function sendRequest(endpoint, data) {
     const API_BASE_URL = `http://${window.location.hostname}:8000`;
     try {
@@ -462,7 +409,6 @@ async function sendRequest(endpoint, data) {
         return await res.json();
     } catch (e) {
         console.error("API Error:", e);
-        // بدلاً من رمي خطأ، نعيد كائن خطأ
         return { 
             status: "error", 
             message: e.message,
@@ -471,5 +417,4 @@ async function sendRequest(endpoint, data) {
     }
 }
 
-// استدعاء الدالة عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', initColorTooltips);

@@ -1710,86 +1710,195 @@ async def custom_running_lights_loop(hex_color: str, delay: float = 0.05):
     neo.update_strip()
 
 
-async def custom_fireworks_burst_loop(hex_color: str, delay_per_step: float = 0.05 / 10):
-
+async def custom_fireworks_burst_loop(hex_color: str, delay_per_step: float = 0.012):
+    
     global stop_requested
     
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
-
-    ROCKET_LENGTH = 7
-    ROCKET_BRIGHTNESSES = [0.25 - (i * 0.03) for i in range(ROCKET_LENGTH)]
-    EXPLOSION_BRIGHTNESS = 1.0
-    FADE_STEPS = 20
-
+    
+    FADE_STEPS = 25
+    FRAME_SLEEP = delay_per_step
+    
     while not stop_requested:
-        explosion_pos = random.randint(ROCKET_LENGTH, NUM_LEDS - ROCKET_LENGTH)
-
-        for head_pos in range(NUM_LEDS - 1, explosion_pos - 1, -1):
-            if stop_requested:
-                break
+        rocket_len = random.randint(5, 8)  
+        explosion_pos = random.randint(NUM_LEDS//3, 2*NUM_LEDS//3) 
+        sparks_count = random.randint(8, 15)  
+        
+        ignition_time = random.uniform(1.5, 3.0)
+        t0 = asyncio.get_event_loop().time()
+        
+        while (asyncio.get_event_loop().time() - t0 < ignition_time) and not stop_requested:
+            now = asyncio.get_event_loop().time()
+            pulse = (math.sin(now * 10.0) + 1.0) / 2.0  
+            head_brightness = 0.5 + 0.5 * pulse
+            
             neo.clear_strip()
-            for i in range(ROCKET_LENGTH):
-                led_pos = head_pos + i
-                if 0 <= led_pos < NUM_LEDS:
-                    brightness = ROCKET_BRIGHTNESSES[i]
-                    r = int(r_base * brightness)
-                    g = int(g_base * brightness)
-                    b = int(b_base * brightness)
-                    neo.set_led_color(
-                        led_pos,
-                        int(r * BRIGHTNESS_SCALE),
-                        int(g * BRIGHTNESS_SCALE),
-                        int(b * BRIGHTNESS_SCALE)
-                    )
+            neo.set_led_color(
+                0,
+                int(r_base * head_brightness * BRIGHTNESS_SCALE),
+                int(g_base * head_brightness * BRIGHTNESS_SCALE),
+                int(b_base * head_brightness * BRIGHTNESS_SCALE)
+            )
             neo.update_strip()
-            await asyncio.sleep(delay_per_step)
-
+            await asyncio.sleep(FRAME_SLEEP)
+        
+        if stop_requested:
+            break
+        
+        start_pos = -rocket_len
+        mid_fraction = random.uniform(0.3, 0.4)
+        mid_pos = start_pos + mid_fraction * (explosion_pos - start_pos)
+        
+        slow_time = random.uniform(1.5, 2.5)
+        t_start = asyncio.get_event_loop().time()
+        
+        while not stop_requested:
+            elapsed = asyncio.get_event_loop().time() - t_start
+            progress = min(1.0, elapsed / slow_time)
+            
+            wobble = math.sin(progress * 15.0) * 0.15 * (1.0 - progress)
+            eased = (1 - math.cos(progress * math.pi)) / 2
+            head_pos_f = start_pos + eased * (mid_pos - start_pos)
+            head_idx = int(round(head_pos_f))
+            
+            neo.clear_strip()
+            now = asyncio.get_event_loop().time()
+            pulse = (math.sin(now * 8.0) + 1.0) / 2.0
+            
+            for t in range(rocket_len):
+                led_pos = head_idx - t + int(wobble * t)
+                if 0 <= led_pos < NUM_LEDS:
+                    if t == 0:  
+                        factor = 0.7 + 0.3 * pulse
+                    else:  
+                        decay = 1.0 - (t / rocket_len)
+                        factor = decay * 0.6 + 0.1 * math.sin(now * 5.0 + t)
+                    
+                    r = int(r_base * factor * BRIGHTNESS_SCALE)
+                    g = int(g_base * factor * BRIGHTNESS_SCALE)
+                    b = int(b_base * factor * BRIGHTNESS_SCALE)
+                    neo.set_led_color(led_pos, r, g, b)
+            
+            neo.update_strip()
+            
+            if progress >= 1.0:
+                break
+            await asyncio.sleep(FRAME_SLEEP)
+        
+        if stop_requested:
+            break
+        
+        fast_time = random.uniform(0.3, 0.6)
+        t_start = asyncio.get_event_loop().time()
+        start_f = head_pos_f
+        
+        while not stop_requested:
+            elapsed = asyncio.get_event_loop().time() - t_start
+            progress = min(1.0, elapsed / fast_time)
+            eased = math.sin(progress * math.pi / 2) 
+            head_pos_f = start_f + eased * (explosion_pos - start_f)
+            head_idx = int(round(head_pos_f))
+            
+            neo.clear_strip()
+            now = asyncio.get_event_loop().time()
+            pulse = (math.sin(now * 12.0) + 1.0) / 2.0
+            
+            trail_len = rocket_len - 2
+            for t in range(trail_len):
+                led_pos = head_idx - t
+                if 0 <= led_pos < NUM_LEDS:
+                    if t == 0:
+                        factor = 0.8 + 0.2 * pulse
+                    else:
+                        factor = (1.0 - (t / trail_len)) * 0.7
+                    
+                    r = int(r_base * factor * BRIGHTNESS_SCALE)
+                    g = int(g_base * factor * BRIGHTNESS_SCALE)
+                    b = int(b_base * factor * BRIGHTNESS_SCALE)
+                    neo.set_led_color(led_pos, r, g, b)
+            
+            neo.update_strip()
+            
+            if head_pos_f >= explosion_pos or progress >= 1.0:
+                break
+            await asyncio.sleep(FRAME_SLEEP)
+        
         if stop_requested:
             break
         
         neo.clear_strip()
-        for i in range(NUM_LEDS):
-            r = int(r_base * EXPLOSION_BRIGHTNESS)
-            g = int(g_base * EXPLOSION_BRIGHTNESS)
-            b = int(b_base * EXPLOSION_BRIGHTNESS)
-            neo.set_led_color(
-                i,
-                int(r * BRIGHTNESS_SCALE),
-                int(g * BRIGHTNESS_SCALE),
-                int(b * BRIGHTNESS_SCALE)
-            )
-        neo.update_strip()
-        await asyncio.sleep(0.2)
+        
 
+        for i in range(NUM_LEDS):
+            distance = abs(i - explosion_pos) / (NUM_LEDS / 2.0)
+            if distance < 0.3:  
+                r = int(r_base * BRIGHTNESS_SCALE)
+                g = int(g_base * BRIGHTNESS_SCALE)
+                b = int(b_base * BRIGHTNESS_SCALE)
+            else:  
+                brightness = 0.7 - distance * 0.5
+                r = int(r_base * brightness * BRIGHTNESS_SCALE)
+                g = int(g_base * brightness * BRIGHTNESS_SCALE)
+                b = int(b_base * brightness * BRIGHTNESS_SCALE)
+            neo.set_led_color(i, r, g, b)
+        
+        neo.update_strip()
+        await asyncio.sleep(0.15)
+        
+        if stop_requested:
+            break
+        
+        spark_positions = []
+        for _ in range(sparks_count):
+            spark_pos = explosion_pos + random.randint(-NUM_LEDS//4, NUM_LEDS//4)
+            spark_pos = max(0, min(NUM_LEDS-1, spark_pos))
+            spark_positions.append(spark_pos)
+        
+        for spark in spark_positions:
+            neo.set_led_color(
+                spark,
+                int(r_base * 1.2 * BRIGHTNESS_SCALE),
+                int(g_base * 1.2 * BRIGHTNESS_SCALE),
+                int(b_base * 1.2 * BRIGHTNESS_SCALE)
+            )
+        
+        neo.update_strip()
+        await asyncio.sleep(0.1)
+        
         for fade_step in range(FADE_STEPS):
             if stop_requested:
                 break
-            factor = 1 - (fade_step / FADE_STEPS)
+            
+            factor = 1.0 - (fade_step / FADE_STEPS)
             neo.clear_strip()
+            
+            wave_center = explosion_pos
             for i in range(NUM_LEDS):
-                r = int(r_base * factor)
-                g = int(g_base * factor)
-                b = int(b_base * factor)
-                neo.set_led_color(
-                    i,
-                    int(r * BRIGHTNESS_SCALE),
-                    int(g * BRIGHTNESS_SCALE),
-                    int(b * BRIGHTNESS_SCALE)
-                )
+                distance = abs(i - wave_center) / NUM_LEDS
+                wave_factor = factor * (0.8 + 0.2 * math.sin(fade_step * 0.5 - distance * 5))
+                wave_factor = max(0, min(1, wave_factor))
+                
+                r = int(r_base * wave_factor * BRIGHTNESS_SCALE)
+                g = int(g_base * wave_factor * BRIGHTNESS_SCALE)
+                b = int(b_base * wave_factor * BRIGHTNESS_SCALE)
+                neo.set_led_color(i, r, g, b)
+            
             neo.update_strip()
-            await asyncio.sleep(0.03)
-
+            await asyncio.sleep(0.04)  
+        
+        if stop_requested:
+            break
+        
         neo.clear_strip()
         neo.update_strip()
-
-        wait_time = random.uniform(0.5, 10.0)
+        
+        wait_time = random.uniform(1.0, 6.0)
         await asyncio.sleep(wait_time)
-
+    
     neo.clear_strip()
     neo.update_strip()
-
 
 
 # ----------------------------------------------------

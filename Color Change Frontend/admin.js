@@ -1,5 +1,6 @@
-// admin.js (FULL) - updated: Real Admin Stuff section added inside modal HTML
-/* eslint-disable no-underscore-dangle */
+// admin.js
+
+
 class AdminPanel {
     constructor() {
         this.modal = null;
@@ -11,35 +12,28 @@ class AdminPanel {
     }
     
     init() {
-        // إنشاء المودال فقط (الزر موجود في HTML)
         this.createAdminModal();
         
-        // إضافة مستمعي الأحداث
         this.addEventListeners();
         
-        // تحديث الحالة
         setTimeout(() => {
             this.updateStatus();
             this.updateUptime();
         }, 1000);
         
-        // تحديث الـ Uptime كل دقيقة
         setInterval(() => this.updateUptime(), 60000);
         
         console.log('Admin Panel initialized');
     }
     
     createAdminModal() {
-        // تحقق إذا كان المودال موجود مسبقاً
         if (document.getElementById('adminPanelModal')) {
             console.log('Admin Panel modal already exists');
             this.modal = document.getElementById('adminPanelModal');
-            // ensure overlay exists if modal recreated
             this.addComingSoonOverlay();
             return;
         }
         
-        // إنشاء حاوية المودال
         const modal = document.createElement('div');
         modal.id = 'adminPanelModal';
         modal.className = 'ap-modal';
@@ -48,7 +42,6 @@ class AdminPanel {
         modal.setAttribute('aria-hidden', 'true');
         modal.setAttribute('aria-labelledby', 'adminPanelTitle');
         
-        // محتوى المودال — تم إضافة قسم "Real Admin Stuff" هنا
         modal.innerHTML = `
             <div class="ap-content" role="document">
                 <div class="ap-header">
@@ -106,7 +99,6 @@ class AdminPanel {
                             </div>
                         </div>
 
-                        <!-- NEW: Real Admin Stuff section (coming soon, professional design) -->
                         <div class="ap-section ap-section-real-admin" id="apRealAdminSection" aria-labelledby="realAdminTitle" role="region">
                           <div class="real-admin-card" role="group" aria-label="Real Admin Stuff (coming soon)">
                             <div class="real-admin-content" aria-hidden="true">
@@ -115,7 +107,6 @@ class AdminPanel {
                               <div class="real-admin-cta">Locked</div>
                             </div>
 
-                            <!-- overlay that shows the professional coming soon -->
                             <div class="real-admin-overlay" role="status" aria-live="polite" aria-label="Coming soon">
                               <span class="coming-soon-text">
                                 Coming soon
@@ -137,52 +128,43 @@ class AdminPanel {
             </div>
         `;
         
-        // إضافة المودال إلى body
         document.body.appendChild(modal);
         this.modal = modal;
         
-        // إنشاء غشاوة "Coming soon" فوق زر Emergency Stop (button overlay)
         this.addComingSoonOverlay();
         
-        // تحديث العناصر القابلة للتركيز
         this.updateFocusableElements();
         
         console.log('Admin Panel modal created (with Real Admin Stuff placeholder)');
     }
     
     addEventListeners() {
-        // النقر على زر Admin Panel
         document.addEventListener('click', (e) => {
             if (e.target.id === 'adminPanelBtn' || e.target.closest('#adminPanelBtn')) {
                 e.preventDefault();
                 this.open();
             }
             
-            // النقر على زر الإغلاق
             if (e.target.id === 'adminClose' || e.target.closest('#adminClose')) {
                 e.preventDefault();
                 this.close();
             }
             
-            // النقر خارج المودال (الخلفية)
             if (e.target === this.modal) {
                 this.close();
             }
         });
         
-        // أحداث لوحة المفاتيح
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isOpen) {
                 this.close();
             }
             
-            // حصر التركيز داخل المودال
             if (e.key === 'Tab' && this.isOpen) {
                 this.trapFocus(e);
             }
         });
         
-        // التحكم في أزرار المودال
         document.addEventListener('click', (e) => {
             if (!this.isOpen) return;
             
@@ -205,24 +187,19 @@ class AdminPanel {
     open() {
         if (this.isOpen) return;
         
-        // حفظ العنصر المركّز حالياً
         this.focusedElementBeforeOpen = document.activeElement;
         
-        // عرض المودال
         this.modal.classList.add('show');
         this.modal.setAttribute('aria-hidden', 'false');
         document.body.classList.add('ap-modal-open');
         this.isOpen = true;
         
-        // تحديث العناصر القابلة للتركيز
         this.updateFocusableElements();
         
-        // التركيز على أول عنصر
         setTimeout(() => {
             this.focusableElements[0]?.focus();
         }, 50);
         
-        // تحديث الحالة
         this.updateStatus();
         
         console.log('Admin Panel opened');
@@ -231,13 +208,11 @@ class AdminPanel {
     close() {
         if (!this.isOpen) return;
         
-        // إخفاء المودال
         this.modal.classList.remove('show');
         this.modal.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('ap-modal-open');
         this.isOpen = false;
         
-        // إعادة التركيز إلى الزر
         if (this.focusedElementBeforeOpen) {
             this.focusedElementBeforeOpen.focus();
         }
@@ -269,13 +244,11 @@ class AdminPanel {
         const lastElement = this.focusableElements[this.focusableElements.length - 1];
         
         if (e.shiftKey) {
-            // Shift + Tab
             if (document.activeElement === firstElement) {
                 e.preventDefault();
                 lastElement.focus();
             }
         } else {
-            // Tab
             if (document.activeElement === lastElement) {
                 e.preventDefault();
                 firstElement.focus();
@@ -292,7 +265,6 @@ class AdminPanel {
             
             if (!apiStatus || !ledStatus || !clientCount || !animState) return;
             
-            // التحقق من حالة API
             try {
                 const response = await fetch(`http://${window.location.hostname}:8000/state`);
                 if (response.ok) {
@@ -318,7 +290,6 @@ class AdminPanel {
                 animState.textContent = 'Unknown';
             }
             
-            // تحديث الطابع الزمني
             const lastUpdate = this.modal.querySelector('#apLastUpdate');
             if (lastUpdate) {
                 const now = new Date();
@@ -334,7 +305,6 @@ class AdminPanel {
         const uptimeElement = this.modal?.querySelector('#apUptime');
         if (!uptimeElement) return;
         
-        // وقت التشغيل المحاكى
         const startTime = Date.now() - (30 * 60 * 1000); 
         const uptimeMs = Date.now() - startTime;
         
@@ -396,10 +366,8 @@ class AdminPanel {
         btn.textContent = 'Stopping...';
         btn.disabled = true;
         
-        // محاكاة التوقف الطارئ
         setTimeout(() => {
-            // في التطبيق الحقيقي، استدع endpoint الإيقاف
-            // fetch(`http://${window.location.hostname}:8000/stop`, { method: 'POST' });
+
             
             btn.textContent = '✓ Stopped';
             
@@ -412,17 +380,14 @@ class AdminPanel {
     }
 
 
-    /* === Coming Soon overlay for Emergency Stop button (unchanged) === */
     addComingSoonOverlay() {
         if (!this.modal) return;
 
         const btn = this.modal.querySelector('#apEmergencyStop');
-        if (!btn) return; // button not present yet
+        if (!btn) return; 
 
-        // If overlay already exists, don't recreate
         if (btn.__comingSoonAttached) return;
 
-        // Create wrapper if not already wrapped
         let wrapper;
         if (btn.parentNode && btn.parentNode.classList && btn.parentNode.classList.contains('ap-button-wrap')) {
             wrapper = btn.parentNode;
@@ -435,15 +400,12 @@ class AdminPanel {
             wrapper.appendChild(btn);
         }
 
-        // apply border-radius for consistent pill shape on wrapper
         try {
             const br = window.getComputedStyle(btn).borderRadius;
             if (br) wrapper.style.borderRadius = br;
         } catch (e) {
-            // ignore
         }
 
-        // Create overlay element with inner HTML for CSS-only dots animation
         const overlay = document.createElement('div');
         overlay.className = 'coming-soon-overlay animate-float';
         overlay.setAttribute('aria-hidden', 'true');
@@ -461,29 +423,23 @@ class AdminPanel {
 
         wrapper.appendChild(overlay);
 
-        // Disable the underlying button to avoid accidental triggers
         btn.disabled = true;
         btn.setAttribute('aria-disabled', 'true');
 
-        // store reference for cleanup if needed
         btn.__comingSoonAttached = true;
         btn.__comingSoonOverlay = overlay;
 
-        // Refresh focusable elements list since we changed DOM and disabled button
         this.updateFocusableElements();
     }
 
-    // Utility: remove the overlay and restore button (kept for dev/test)
     removeComingSoonOverlay() {
         if (!this.modal) return;
         const btn = this.modal.querySelector('#apEmergencyStop');
         if (!btn || !btn.__comingSoonAttached) return;
 
-        // remove overlay
         const overlay = btn.__comingSoonOverlay;
         if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
 
-        // unwrap the button if desired
         const wrapper = btn.parentNode;
         if (wrapper && wrapper.classList && wrapper.classList.contains('ap-button-wrap')) {
             wrapper.parentNode.insertBefore(btn, wrapper);
@@ -496,17 +452,13 @@ class AdminPanel {
         delete btn.__comingSoonAttached;
         delete btn.__comingSoonOverlay;
 
-        // refresh focusables
         this.updateFocusableElements();
     }
 }
 
-// تهيئة عند تحميل DOM
 document.addEventListener('DOMContentLoaded', () => {
-    // إضافة زر Admin Panel يدوياً إلى HTML
     const footer = document.querySelector('.site-footer');
     if (footer) {
-        // إنشاء زر Admin Panel
         const adminBtn = document.createElement('button');
         adminBtn.id = 'adminPanelBtn';
         adminBtn.className = 'ap-button';
@@ -515,15 +467,12 @@ document.addEventListener('DOMContentLoaded', () => {
         adminBtn.setAttribute('aria-controls', 'adminPanelModal');
         adminBtn.setAttribute('aria-label', 'Open Admin Panel');
         
-        // إضافة الزر إلى الـ footer
         footer.appendChild(adminBtn);
         
         console.log('Admin Panel button added to footer');
     }
     
-    // تهيئة Admin Panel
     new AdminPanel();
 });
 
-// تصدير للوصول العالمي (اختياري)
 window.AdminPanel = AdminPanel;

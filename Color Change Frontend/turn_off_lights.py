@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import requests
 
-# إذا السيرفر يعمل على الـPi نفسه، نستخدم localhost
+
 url = "http://localhost:8000/color"
 data = {"hex_color": "#000000"}
 

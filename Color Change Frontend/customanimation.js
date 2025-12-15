@@ -33,7 +33,7 @@ const animationTooltipData = {
         startFunction: 'startBreathingAnimation'
     },
     'MeteorShowerBtn': { 
-        title: 'Meteor Shower', 
+        title: 'Snakes Chasing', 
         animationType: 'meteor_shower',
         startFunction: 'startSnakesChasing'
     },
@@ -53,24 +53,21 @@ const animationTooltipData = {
         startFunction: 'startFireworksBurst'
     },
     'MeteorShowerNewBtn': { 
-        title: 'Meteor Shower (Single)', 
+        title: 'Meteor Shower', 
         animationType: 'single_snake',
         startFunction: 'startSingleSnake'
     }
 };
 
-// متغيرات عالمية للأنيميشن
 let currentAnimationTooltip = null;
 let currentAnimationBrightness = 25;
 let currentAnimationButton = null;
 let isApplyingBrightness = false;
 
-// NEW: متغيرات التأخير للـ tooltip
-let animationHoverTimeout = null; // للتأخير
-let animationTooltipShownByClick = false; // لتتبع إذا كان الـ tooltip معروضاً بالنقر
-let isAnimationHovering = false; // لتتبع حالة التحويم
+let animationHoverTimeout = null; 
+let animationTooltipShownByClick = false; 
+let isAnimationHovering = false;
 
-// دالة لتحميل سطوع الأنيميشن من localStorage
 function loadAnimationBrightnessFromStorage() {
     const savedBrightness = localStorage.getItem('animationBrightness');
     if (savedBrightness !== null) {
@@ -79,23 +76,18 @@ function loadAnimationBrightnessFromStorage() {
     }
 }
 
-// دالة لحفظ سطوع الأنيميشن في localStorage
 function saveAnimationBrightnessToStorage(brightness) {
     localStorage.setItem('animationBrightness', brightness.toString());
     console.log('Saved animation brightness to storage:', brightness);
 }
 
-// تهيئة الـ Tooltip لأزرار الأنيميشن
 function initAnimationTooltips() {
     console.log('Initializing animation tooltips...');
     
-    // تحميل قيمة السطوع المحفوظة
     loadAnimationBrightnessFromStorage();
     
-    // إنشاء عنصر الـ tooltip إذا لم يكن موجوداً
     createAnimationTooltip();
     
-    // إضافة event listeners
     setupAnimationEventListeners();
 }
 
@@ -133,7 +125,6 @@ function createAnimationTooltip() {
 function setupAnimationEventListeners() {
     console.log('Setting up animation event listeners...');
     
-    // إضافة event listener للزر Apply
     document.addEventListener('click', function(e) {
         if (e.target && e.target.id === 'applyAnimationBrightness') {
             console.log('Apply animation button clicked');
@@ -141,7 +132,6 @@ function setupAnimationEventListeners() {
         }
     });
 
-    // إضافة event listener لعجلة الماوس على شريط السطوع
     document.addEventListener('wheel', function(e) {
         const slider = document.getElementById('animationBrightnessSlider');
         if (slider && (e.target === slider || slider.contains(e.target))) {
@@ -151,7 +141,6 @@ function setupAnimationEventListeners() {
         }
     });
 
-    // إضافة event listener لسحب شريط التمرير
     document.addEventListener('input', function(e) {
         if (e.target && e.target.id === 'animationBrightnessSlider') {
             console.log('Animation slider input changed');
@@ -159,7 +148,6 @@ function setupAnimationEventListeners() {
         }
     });
 
-    // إضافة event listeners لأزرار الأنيميشن
     const animationButtons = document.querySelectorAll('.button-container button.custom-animation-btn');
     console.log('Found animation buttons:', animationButtons.length);
     
@@ -170,79 +158,65 @@ function setupAnimationEventListeners() {
         if (animationTooltipData[buttonId]) {
             console.log('Adding listeners to animation button:', buttonId);
             
-            // إضافة كلاس التأخير للتحويم للمؤشر البصري
             button.classList.add('button-hover-delay');
             
-            // mouseenter على الزر - مع تأخير 3 ثواني
             button.addEventListener('mouseenter', (e) => {
                 console.log('Mouse enter on animation button:', buttonId);
                 isAnimationHovering = true;
                 
-                // عدم إظهار إذا كان الـ tooltip معروضاً بالفعل (إلا إذا كان معروضاً بالنقر)
                 if (currentAnimationTooltip && currentAnimationTooltip.classList.contains('show') && !animationTooltipShownByClick) {
                     return;
                 }
                 
-                // إلغاء أي تأخير سابق
                 if (animationHoverTimeout) {
                     clearTimeout(animationHoverTimeout);
                     animationHoverTimeout = null;
                 }
                 
-                // بدء تأخير 3 ثواني للتحويم
                 animationHoverTimeout = setTimeout(() => {
                     console.log('3-second hover delay completed - showing animation tooltip');
-                    if (isAnimationHovering) { // فقط إذا كان لا يزال التحويم مستمراً
+                    if (isAnimationHovering) { 
                         animationTooltipShownByClick = false;
                         showAnimationTooltip(e.target, buttonId);
                     }
                     animationHoverTimeout = null;
-                }, 3000); // 3 ثواني
+                }, 3000); 
             });
 
-            // mouseleave على الزر
             button.addEventListener('mouseleave', (e) => {
                 console.log('Mouse leave from animation button:', buttonId);
                 isAnimationHovering = false;
                 
-                // إلغاء تأخير التحويم
                 if (animationHoverTimeout) {
                     clearTimeout(animationHoverTimeout);
                     animationHoverTimeout = null;
                     console.log('Animation hover timeout cleared');
                 }
                 
-                // فقط إخفاء الـ tooltip إذا كان معروضاً بالتحويم (وليس بالنقر)
                 if (currentAnimationTooltip && currentAnimationTooltip.classList.contains('show') && !animationTooltipShownByClick) {
                     const relatedTarget = e.relatedTarget;
-                    // التحقق إذا كان الماوس ينتقل إلى الـ tooltip
                     if (!relatedTarget || (currentAnimationTooltip && !currentAnimationTooltip.contains(relatedTarget))) {
                         hideAnimationTooltip();
                     }
                 }
             });
 
-            // click على الزر - إظهار فوري
             button.addEventListener('click', (e) => {
                 console.log('Animation button clicked - showing tooltip immediately');
                 e.stopPropagation();
                 
-                // إلغاء أي تأخير تحويم
                 if (animationHoverTimeout) {
                     clearTimeout(animationHoverTimeout);
                     animationHoverTimeout = null;
                 }
                 
-                // تعيين العلم أن الـ tooltip معروض بالنقر
                 animationTooltipShownByClick = true;
                 
-                // إظهار الـ tooltip فوراً
                 showAnimationTooltip(e.target, buttonId);
             });
         }
     });
 
-    // event listeners للـ tooltip نفسه
     if (currentAnimationTooltip) {
         currentAnimationTooltip.addEventListener('mouseenter', () => {
             console.log('Mouse enter on animation tooltip');
@@ -251,17 +225,14 @@ function setupAnimationEventListeners() {
 
         currentAnimationTooltip.addEventListener('mouseleave', () => {
             console.log('Mouse leave from animation tooltip');
-            // فقط إخفاء إذا كان الـ tooltip معروضاً بالتحويم (وليس بالنقر)
             if (!animationTooltipShownByClick) {
                 hideAnimationTooltip();
             }
         });
     }
     
-    // NEW: إغلاق الـ tooltip عند النقر خارجاً
     document.addEventListener('click', function(e) {
         if (currentAnimationTooltip && currentAnimationTooltip.classList.contains('show')) {
-            // التحقق إذا كان النقر خارج الـ tooltip وليس على زر أنيميشن
             if (!currentAnimationTooltip.contains(e.target) && 
                 !e.target.closest('.button-container button.custom-animation-btn')) {
                 hideAnimationTooltip();
@@ -270,7 +241,6 @@ function setupAnimationEventListeners() {
         }
     });
     
-    // NEW: إلغاء تأخير التحويم عند فقدان نافذة التركيز
     window.addEventListener('blur', function() {
         if (animationHoverTimeout) {
             clearTimeout(animationHoverTimeout);
@@ -279,7 +249,6 @@ function setupAnimationEventListeners() {
         isAnimationHovering = false;
     });
     
-    // NEW: إلغاء تأخير التحويم عند إعادة تحميل الصفحة
     window.addEventListener('beforeunload', function() {
         if (animationHoverTimeout) {
             clearTimeout(animationHoverTimeout);
@@ -317,29 +286,24 @@ function showAnimationTooltip(button, buttonId) {
     tooltipTitle.textContent = buttonData.title || '';
     animationDescription.textContent = buttonData.description || '';
 
-    // توليد ألوان عشوائية جديدة
     const [color1, color2, color3] = generateRandomAnimationColors();
     currentAnimationTooltip.style.setProperty('--random-color-1', color1);
     currentAnimationTooltip.style.setProperty('--random-color-2', color2);
     currentAnimationTooltip.style.setProperty('--random-color-3', color3);
 
-    // تعيين نوع الأنيميشن الحالي والسطوع
     currentAnimationTooltip.setAttribute('data-animation-type', buttonData.animationType);
     currentAnimationTooltip.setAttribute('data-start-function', buttonData.startFunction);
     currentAnimationTooltip.setAttribute('data-current-brightness', currentAnimationBrightness);
-    currentAnimationButton = buttonId; // حفظ الزر الحالي
+    currentAnimationButton = buttonId; 
 
-    // تحديث شريط التمرير وعرض القيمة
     brightnessSlider.value = currentAnimationBrightness;
     brightnessValue.textContent = `${currentAnimationBrightness}%`;
 
-    // تحديث نص الزر بناءً على حالة الأنيميشن الحالية
     const isCurrentlyRunning = button.classList.contains('active');
     applyBtn.textContent = isCurrentlyRunning ? 
         'Update Brightness' : 
         'Apply Brightness & Start';
 
-    // تحديث موضع الـ tooltip
     currentAnimationTooltip.style.left = `${rect.left + (rect.width / 2)}px`;
     currentAnimationTooltip.style.top = `${rect.top - 10}px`;
     currentAnimationTooltip.style.transform = 'translate(-50%, -100%)';
@@ -351,7 +315,7 @@ function showAnimationTooltip(button, buttonId) {
 function hideAnimationTooltip() {
     if (currentAnimationTooltip) {
         currentAnimationTooltip.classList.remove('show');
-        animationTooltipShownByClick = false; // إعادة تعيين العلم
+        animationTooltipShownByClick = false;
         console.log('Animation tooltip hidden');
     }
 }
@@ -370,7 +334,6 @@ function handleWheelAnimationBrightness(e, slider) {
         currentAnimationTooltip.setAttribute('data-current-brightness', newValue);
     }
     
-    // حفظ السطوع الجديد في localStorage
     saveAnimationBrightnessToStorage(newValue);
     
     console.log('Animation brightness changed to:', newValue + '%');
@@ -385,7 +348,6 @@ function handleAnimationSliderChange(e) {
         currentAnimationTooltip.setAttribute('data-current-brightness', newValue);
     }
     
-    // حفظ السطوع الجديد في localStorage
     saveAnimationBrightnessToStorage(newValue);
     
     console.log('Animation brightness slider changed to:', newValue + '%');
@@ -420,32 +382,26 @@ async function handleApplyAnimationBrightness(e) {
 
     console.log('Applying animation brightness:', brightness + '% to animation:', animationType);
 
-    // منع النقر المزدوج
     isApplyingBrightness = true;
     applyBtn.disabled = true;
     const originalText = applyBtn.textContent;
     applyBtn.textContent = 'Applying...';
 
     try {
-        // تحديث السطوع أولاً
         await updateAnimationBrightness(parseInt(brightness));
         
-        // التحقق مما إذا كانت الأنيميشن شغالة حالياً
         const button = document.getElementById(currentAnimationButton);
         const isCurrentlyRunning = button && button.classList.contains('active');
         
         if (!isCurrentlyRunning) {
-            // إذا لم تكن شغالة، نبدأ الأنيميشن
             console.log('Starting animation since it was not running');
             await startAnimationFunction(startFunction);
         } else {
             console.log('Animation is already running, only brightness updated');
         }
         
-        // إخفاء الـ tooltip بعد التطبيق الناجح
         hideAnimationTooltip();
         
-        // إظهار تأكيد نجاح
         applyBtn.textContent = 'Done!';
         applyBtn.classList.add('done');
         
@@ -454,7 +410,6 @@ async function handleApplyAnimationBrightness(e) {
         applyBtn.textContent = 'Error!';
     }
 
-    // إعادة تعيين الزر بعد 1 ثانية
     setTimeout(() => {
         applyBtn.disabled = false;
         applyBtn.textContent = originalText;
@@ -464,7 +419,6 @@ async function handleApplyAnimationBrightness(e) {
     }, 1000);
 }
 
-// دالة لتحديث السطوع فقط
 async function updateAnimationBrightness(brightness) {
     console.log(`Updating animation brightness to: ${brightness}%`);
     
@@ -481,7 +435,6 @@ async function updateAnimationBrightness(brightness) {
     }
 }
 
-// دالة مساعدة لاستدعاء دوال الأنيميشن من app.js
 async function startAnimationFunction(functionName) {
     console.log("Starting animation function:", functionName);
     
@@ -494,7 +447,6 @@ async function startAnimationFunction(functionName) {
     }
 }
 
-// دالة لتوليد ألوان عشوائية للأنيميشن
 function generateRandomAnimationColors() {
     const hue1 = Math.floor(Math.random() * 360);
     const hue2 = (hue1 + 120 + Math.floor(Math.random() * 60) - 30) % 360;
@@ -507,7 +459,6 @@ function generateRandomAnimationColors() {
     ];
 }
 
-// دالة مساعدة لإرسال طلبات الأنيميشن
 async function sendAnimationRequest(endpoint, data) {
     const API_BASE_URL = `http://${window.location.hostname}:8000`;
     try {
@@ -536,5 +487,4 @@ async function sendAnimationRequest(endpoint, data) {
     }
 }
 
-// استدعاء الدالة عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', initAnimationTooltips);

@@ -1502,7 +1502,6 @@ button:hover {
 }
 
 
-  /* 2. إعداد الهيكل العام للصفحة */
 *,
 *:before,
 *:after {
@@ -1528,7 +1527,6 @@ body {
 
 
 
-/* تذبذب خفيف للبطاقة */
 @keyframes card-pulse {
   0% {
     box-shadow: var(--shadow-glow-large) var(--aura-color-1);
@@ -1597,7 +1595,6 @@ button:focus {
   box-shadow: var(--shadow-glow-large) var(--accent-color-3);
 }
 
-/* إضافة تأثير نبض ثابت للأزرار النشطة */
 button.active {
   animation: button-pulse var(--anim-speed-slow) infinite alternate;
 }
@@ -1614,7 +1611,6 @@ button.active {
   }
 }
 
-/* شبكة خطوط متحركة خلف الأزرار */
 button::before {
   content: "";
   position: absolute;
@@ -1645,7 +1641,6 @@ button:hover::before {
 }
 
 
-/* تلميح نصي يظهر بجانب المؤشر (Tooltip) */
 .tooltip {
   position: absolute;
   padding: 6px 10px;
@@ -1661,7 +1656,6 @@ button:hover::before {
 }
 
 
-/* الروابط داخل البطاقة */
 .card a {
   color: var(--accent-color-2);
   text-decoration: none;
@@ -1692,7 +1686,6 @@ button:hover::before {
   left: 0;
 }
 
-/* الصور داخل البطاقة */
 .card img {
   width: 100%;
   border-radius: 12px;
@@ -1727,12 +1720,10 @@ button:hover::before {
 
 
 
-/* Card rectangle with epic border animation */
 .card-vertical { width: 300px; height: 600px; margin: 50px auto; background: rgba(255,255,255,0.05); border: 2px solid #0f0; position: relative; }
 .card-vertical::before { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border: 2px solid transparent; border-image: linear-gradient(45deg, #0f0, #000, #0f0, #000); border-image-slice: 1; animation: border-rotate 5s linear infinite; }
 @keyframes border-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* Wave background stripes */
 .wave-1 { background: linear-gradient(10deg, rgba(1,2,3,0.1) 0%, transparent 50%); height: 5px; }
 .wave-2 { background: linear-gradient(20deg, rgba(2,4,6,0.1) 0%, transparent 50%); height: 5px; }
 .wave-3 { background: linear-gradient(30deg, rgba(3,6,9,0.1) 0%, transparent 50%); height: 5px; }
@@ -1756,7 +1747,6 @@ button:hover::before {
     overflow: hidden;
 }
 
-/* ─── إضافة لمعان النجمة ─── */
 .star {
     position: absolute;
     font-size: 20px;          
@@ -1950,10 +1940,6 @@ button:hover::before {
 }
 
 
-
-
-
-/* موجة أفقية مخفية في الخلفية */
 .horizontal-wave {
   position: absolute;
   bottom: -50px;
@@ -1981,7 +1967,6 @@ button:hover::before {
 }
 
 
-/* تعريف Keyframes لأنيميشن “star-glow” ليزيد ويقلل الهُج تدريجياً */
 @keyframes star-glow {
     0% {
         text-shadow: 
@@ -2021,7 +2006,6 @@ button:hover::before {
 
 
 
-/* تأثيرات للأزرار عند النشاط */
 button.active {
     box-shadow: 0 0 15px var(--ui-color);
     transform: scale(1.05);
@@ -2082,7 +2066,6 @@ button.active {
     box-shadow: 0 0 30px 12px rgba(255, 215, 0, 0.8);
 }
 
-/* Modal Styles */
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -2110,7 +2093,6 @@ button.active {
     animation: slideIn 0.5s ease forwards;
 }
 
-/* Animation for closing the modal */
 .modal-backdrop.closing {
     animation: fadeOut 0.5s ease forwards !important;
 }
@@ -2220,7 +2202,6 @@ button.active {
     text-align: center;
 }
 
-/* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -2236,7 +2217,6 @@ button.active {
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* Vaporize Animation */
 @keyframes vaporize {
     0% {
         transform: translateY(0) scale(1);
@@ -2252,7 +2232,6 @@ button.active {
     }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .header h1 {
         font-size: 2.2rem;

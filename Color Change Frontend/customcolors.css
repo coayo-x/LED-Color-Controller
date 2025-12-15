@@ -1,4 +1,4 @@
-/* customcolors.css - UPDATED */
+/* customcolors.css */
 
 .custom-color-tooltip {
     position: fixed;
@@ -89,7 +89,6 @@
     }
 }
 
-/* أنماط عناصر التحكم في السطوع */
 .brightness-controls {
     margin: 15px 0;
 }
@@ -200,7 +199,6 @@
     box-shadow: none;
 }
 
-/* NEW: Button hover delay indicators */
 .button-hover-delay {
     position: relative;
     overflow: hidden;
@@ -227,7 +225,6 @@
     background: var(--random-color-2);
 }
 
-/* Quick hover indicator for debugging */
 .button-hover-delay:hover:not(.delay-complete) {
     position: relative;
 }

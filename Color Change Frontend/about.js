@@ -4,7 +4,6 @@ const aboutBtn = document.getElementById('aboutBtn');
 const aboutModal = document.getElementById('aboutModal');
 const aboutClose = document.getElementById('aboutClose');
 
-// Animation System Class
 class AnimationSystem {
     constructor(container) {
         this.container = container;
@@ -17,13 +16,11 @@ class AnimationSystem {
         ];
     }
 
-    // Get random animation
     getRandomAnimation() {
         const randomIndex = Math.floor(Math.random() * this.animations.length);
         return this.animations[randomIndex];
     }
 
-    // Start random animation
     startRandomAnimation() {
         this.stopCurrentAnimation();
         
@@ -50,20 +47,17 @@ class AnimationSystem {
         }
     }
 
-    // Stop current animation
     stopCurrentAnimation() {
         if (this.currentAnimation && this.currentAnimation.stop) {
             this.currentAnimation.stop();
         }
         this.currentAnimation = null;
         
-        // Remove all canvas elements
         const canvases = this.container.querySelectorAll('canvas');
         canvases.forEach(canvas => canvas.remove());
     }
 }
 
-// 1. Particle Network Animation (Original)
 class ParticleNetworkAnimation {
     constructor(container) {
         this.container = container;
@@ -163,7 +157,6 @@ class ParticleNetworkAnimation {
     }
 }
 
-// 2. Floating Bubbles Animation
 class FloatingBubblesAnimation {
     constructor(container) {
         this.container = container;
@@ -241,7 +234,6 @@ class FloatingBubblesAnimation {
     }
 }
 
-// 6. Magnetic Field Animation
 class MagneticFieldAnimation {
     constructor(container) {
         this.container = container;
@@ -294,7 +286,6 @@ class MagneticFieldAnimation {
         for (let i = 0; i < this.particles.length; i++) {
             const p = this.particles[i];
             
-            // Magnetic field effect towards mouse
             const dx = this.mouse.x - p.x;
             const dy = this.mouse.y - p.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
@@ -305,19 +296,16 @@ class MagneticFieldAnimation {
                 p.vy += (dy / distance) * force;
             }
             
-            // Apply velocity and friction
             p.x += p.vx;
             p.y += p.vy;
             p.vx *= 0.95;
             p.vy *= 0.95;
             
-            // Draw particle
             this.ctx.beginPath();
             this.ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
             this.ctx.fillStyle = p.color;
             this.ctx.fill();
             
-            // Draw field lines
             if (distance < 150) {
                 this.ctx.beginPath();
                 this.ctx.moveTo(p.x, p.y);
@@ -343,7 +331,6 @@ class MagneticFieldAnimation {
     }
 }
 
-// 10. Hologram Grid Animation
 class HologramGridAnimation {
     constructor(container) {
         this.container = container;
@@ -373,7 +360,6 @@ class HologramGridAnimation {
         const gridSize = 40;
         const pulse = Math.sin(this.time) * 5;
         
-        // Draw vertical lines
         for (let x = 0; x < this.canvas.width; x += gridSize) {
             this.ctx.beginPath();
             this.ctx.moveTo(x + pulse, 0);
@@ -383,7 +369,6 @@ class HologramGridAnimation {
             this.ctx.stroke();
         }
         
-        // Draw horizontal lines
         for (let y = 0; y < this.canvas.height; y += gridSize) {
             this.ctx.beginPath();
             this.ctx.moveTo(0, y + pulse);
@@ -393,7 +378,6 @@ class HologramGridAnimation {
             this.ctx.stroke();
         }
         
-        // Draw central point
         this.ctx.beginPath();
         this.ctx.arc(this.canvas.width / 2, this.canvas.height / 2, 3, 0, Math.PI * 2);
         this.ctx.fillStyle = 'rgba(0, 255, 255, 0.8)';
@@ -414,28 +398,22 @@ class HologramGridAnimation {
     }
 }
 
-// Initialize Animation System
 let animationSystem = null;
 
-// Enhanced modal functions
 async function openAbout() {
     if (!aboutModal) return;
     
-    // Prevent multiple openings
     if (aboutModal.classList.contains('show')) return;
     
-    // Add loading state to button
     aboutBtn.classList.add('loading');
     aboutBtn.innerHTML = 'Loading...';
     
     await new Promise(resolve => setTimeout(resolve, 300));
     
-    // Show modal with animation
     aboutModal.classList.add('show');
     aboutModal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
     
-    // Initialize animation system and start random animation
     if (!animationSystem) {
         animationSystem = new AnimationSystem(aboutModal);
     }
@@ -446,23 +424,19 @@ async function openAbout() {
         title.textContent = 'Smart Light Controller';
     }
 
-    // Restore button state
     aboutBtn.classList.remove('loading');
     aboutBtn.innerHTML = 'About';
     
-    // Focus management
     aboutClose.focus();
 }
 
 function closeAbout() {
     if (!aboutModal) return;
     
-    // Stop current animation
     if (animationSystem) {
         animationSystem.stopCurrentAnimation();
     }
     
-    // Add closing animation
     aboutModal.style.animation = 'aboutFadeOut 0.25s ease-in both';
     
     setTimeout(() => {
@@ -474,14 +448,12 @@ function closeAbout() {
     }, 250);
 }
 
-// Enhanced event listeners
 if (aboutBtn) {
     aboutBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         await openAbout();
     });
     
-    // Add ripple effect to button
     aboutBtn.addEventListener('click', function(e) {
         const ripple = document.createElement('span');
         const rect = this.getBoundingClientRect();
@@ -517,20 +489,17 @@ if (aboutClose) {
     });
 }
 
-// Enhanced backdrop click
 aboutModal.addEventListener('click', (e) => {
     if (e.target === aboutModal) {
         closeAbout();
     }
 });
 
-// Enhanced keyboard navigation
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && aboutModal.classList.contains('show')) {
         closeAbout();
     }
     
-    // Tab key trapping inside modal
     if (e.key === 'Tab' && aboutModal.classList.contains('show')) {
         const focusableElements = aboutModal.querySelectorAll(
             'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -581,7 +550,6 @@ style.textContent = `
         pointer-events: none;
     }
     
-    /* إزالة الأنيميشنات للعناصر الداخلية */
     .about-section {
         opacity: 1;
         transform: none;
@@ -618,7 +586,6 @@ style.textContent = `
 
 document.head.appendChild(style);
 
-// Initialize hover effects for feature list
 document.addEventListener('DOMContentLoaded', () => {
     const features = document.querySelectorAll('.feature-list li');
     features.forEach(feature => {
@@ -628,7 +595,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Performance optimization
 let resizeTimeout;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
@@ -639,7 +605,6 @@ window.addEventListener('resize', () => {
     }, 250);
 });
 
-// Export for global access
 window.AboutModal = {
     open: openAbout,
     close: closeAbout,

@@ -1,7 +1,6 @@
 // BrightnessControl.js
 
 
-// Brightness Control functionality
 const brightnessPanel = document.getElementById('brightnessPanel');
 const brightnessSlider = document.getElementById('brightnessSlider');
 const brightnessValue = document.getElementById('brightnessValue');
@@ -12,9 +11,8 @@ overlay.className = 'overlay';
 document.body.appendChild(overlay);
 
 let currentAnimationType = null;
-let currentBrightness = 0.25; // Default brightness
+let currentBrightness = 0.25; 
 
-//  click event to all animation buttons
 document.querySelectorAll('.button-container button, .custom-animation-btn').forEach(button => {
     if (button.id !== 'offBtn' 
         && button.id !== 'off2Btn' 
@@ -62,63 +60,50 @@ document.querySelectorAll('.button-container button, .custom-animation-btn').for
 
     ) {
         button.addEventListener('click', function() {
-            // Store the current animation type
             currentAnimationType = this.id.replace('Btn', '');
             
-            // Show brightness panel
             showBrightnessPanel();
         });
     }
 });
 
-// Show brightness panel
 function showBrightnessPanel() {
     brightnessPanel.classList.remove('hidden');
     overlay.classList.add('active');
     
-    // Set slider to current brightness value
     brightnessSlider.value = currentBrightness * 100;
     brightnessValue.textContent = `${Math.round(currentBrightness * 100)}%`;
 }
 
-// Hide brightness panel
 function hideBrightnessPanel() {
     brightnessPanel.classList.add('hidden');
     overlay.classList.remove('active');
 }
 
-// Update brightness value display
 brightnessSlider.addEventListener('input', function() {
     brightnessValue.textContent = `${this.value}%`;
 });
 
-// Apply brightness changes
 applyBrightnessBtn.addEventListener('click', function() {
     currentBrightness = parseInt(brightnessSlider.value) / 100;
     hideBrightnessPanel();
     
-    // Send brightness update to server
     updateBrightness(currentBrightness);
     
-    // If an animation was selected, start it with the new brightness
     if (currentAnimationType) {
         const button = document.getElementById(`${currentAnimationType}Btn`);
         if (button) button.click();
     }
 });
 
-// Close panel when clicking close button
 closeBrightnessBtn.addEventListener('click', hideBrightnessPanel);
 
-// Close panel when clicking outside
 overlay.addEventListener('click', hideBrightnessPanel);
 
-// Prevent panel from closing when clicking inside it
 brightnessPanel.addEventListener('click', function(e) {
     e.stopPropagation();
 });
 
-// Function to update brightness on the server
 async function updateBrightness(brightness) {
     try {
         const response = await fetch(`${API_BASE_URL}/set_brightness`, {

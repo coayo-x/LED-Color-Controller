@@ -11,7 +11,6 @@
 .random-color-9 { background-color: #F46036; color: white; }
 .random-color-10 { background-color: #5B6C5D; color: white; }
 
-/* أنماط الـ Tooltip مع أطراف عشوائية */
 .animation-tooltip {
     position: fixed;
     background: rgba(30, 30, 40, 0.95);
@@ -99,7 +98,6 @@
     }
 }
 
-/* تأثيرات إضافية للزر عند التمرير */
 button:hover::after {
     content: '';
     position: absolute;

@@ -1,4 +1,4 @@
-/* customcolorpicker.css - الملف المحدث والمعزول */
+/* customcolorpicker.css */
 
 .ccp-tooltip {
     position: fixed;
@@ -44,7 +44,6 @@
     line-height: 1.4;
 }
 
-/* أنماط الـ Color Picker الجديد المعزول */
 .ccp-color-container {
     margin: 15px 0;
     padding: 15px;
@@ -186,7 +185,6 @@
     }
 }
 
-/* أنماط عناصر التحكم في السطوع */
 .ccp-brightness-controls {
     margin: 15px 0;
 }
@@ -255,7 +253,6 @@
     border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
-/* أنماط رسالة الخطأ */
 .ccp-error-message {
     color: #ff4444;
     font-size: 0.8rem;
@@ -318,7 +315,6 @@
     box-shadow: none;
 }
 
-/* حالة عدم اختيار اللون */
 .ccp-no-color {
     opacity: 0.6;
     border: 2px dashed rgba(255, 255, 255, 0.3) !important;

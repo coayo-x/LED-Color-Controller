@@ -1,127 +1,48 @@
-# ⚙️ Auto Run Setup
+# Auto-Run Setup
 
-This folder explains how to automatically start both the **backend (FastAPI + Uvicorn)** and the **frontend (served via `http-server`)** on your Raspberry Pi.
+## What This Auto-Run Setup Is For
+This setup makes the project start automatically after boot. It starts:
+- Backend service (FastAPI with Uvicorn).
+- Frontend service (static files served by http-server).
 
----
+## Before You Start
+- OS: Raspberry Pi OS or another Linux distribution with systemd.
+- Permissions: You need sudo access.
+- Required packages:
+  - Python 3, pip, venv
+  - Node.js and npm
+  - http-server (global npm package)
 
-## ⚡ `.bashrc` Method (Quick & Temporary)
-
-To quickly auto-start the project when logging into `tty1`, edit your `~/.bashrc`:
-
-```bash
-nano ~/.bashrc
-```
-
-Add this block at the end:
-
-```bash
-if [ "$(tty)" = "/dev/tty1" ]; then
-  export PYTHONIOENCODING=utf-8
-
-  # backend
-  cd /home/username/project_folder
-  source .venv/bin/activate
-  /home/username/project_folder/.venv/bin/python -m uvicorn server:app --host 0.0.0.0 --port 8000 &
-
-  sleep 2
-
-  # frontend
-  cd "/home/username/project_folder/frontend_folder"
-  /usr/local/bin/http-server -c-1 -p 5501 &
-fi
-```
-
-> **Notes**
->
-> * Replace `username` and folder names with your actual paths.
-> * Use quotes if the folder name contains spaces.
-> * Get your home path with:
->
->   ```bash
->   echo $HOME
->   ```
-> * Redirect logs if needed:
->
->   ```bash
->   ... --port 8000 > /home/username/uvicorn.log 2>&1 &
->   ```
-
-> **Limitations**
->
-> * Runs only on interactive login (`tty1`), not at boot.
-> * No process supervision or auto-restart.
-> * Not ideal for long-term setups.
-
-For a clean, reliable startup, use **systemd** instead.
-
----
-
-## 🛠️ `systemd` Method (Recommended)
-
-`systemd` starts your services automatically at boot, restarts them on failure, and provides full control through `systemctl`.
-
-You’ll create two service units:
-
-* **led-backend.service** — runs the FastAPI backend
-* **led-frontend.service** — serves the static frontend
-
----
-
-### 🌐 Frontend Service
-
-Create the file:
+Install packages if needed:
 
 ```bash
-sudo nano /etc/systemd/system/led-frontend.service
+sudo apt update
+sudo apt install -y python3 python3-venv python3-pip nodejs npm
+sudo npm install -g http-server
 ```
 
-Paste:
+## Folder Structure
+This file is located at:
 
-```ini
-[Unit]
-Description=LED Color Controller Frontend (http-server)
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-User=student
-WorkingDirectory=/home/student/pixel_project/LED-Color-Controller/Color\ Change\ Frontend
-ExecStart=/usr/local/bin/http-server -c-1 -p 5501
-Restart=on-failure
-RestartSec=5
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
+```
+LED-Color-Controller/Color Change Frontend/Auto Run Setup/README.md
 ```
 
-Then run:
+The services use these working directories:
+- Backend: the project root (example: `/home/student/pixel_project`)
+- Frontend: the frontend folder (example: `/home/student/pixel_project/LED-Color-Controller/Color Change Frontend`)
 
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable --now led-frontend.service
-```
+## Step-by-Step Auto-Run Setup
+You will create two systemd service files.
 
-Check status and logs:
-
-```bash
-sudo systemctl status led-frontend.service
-sudo journalctl -u led-frontend.service -f
-```
-
----
-
-### 🧠 Backend Service
-
-Create the file:
+### 1. Backend auto-start (systemd)
+Create the service file:
 
 ```bash
 sudo nano /etc/systemd/system/led-backend.service
 ```
 
-Paste:
+Paste and update the paths and user:
 
 ```ini
 [Unit]
@@ -144,83 +65,101 @@ StandardError=journal
 WantedBy=multi-user.target
 ```
 
-Enable and start:
+### 2. Frontend auto-start (systemd)
+Create the service file:
+
+```bash
+sudo nano /etc/systemd/system/led-frontend.service
+```
+
+Paste and update the paths and user:
+
+```ini
+[Unit]
+Description=LED Color Controller Frontend (http-server)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=student
+WorkingDirectory=/home/student/pixel_project/LED-Color-Controller/Color\ Change\ Frontend
+ExecStart=/usr/local/bin/http-server -c-1 -p 5501
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+```
+
+## Enabling & Testing
+Reload systemd and enable both services:
 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now led-backend.service
+sudo systemctl enable --now led-frontend.service
 ```
 
-Check status and logs:
+Check status:
 
 ```bash
 sudo systemctl status led-backend.service
-sudo journalctl -u led-backend.service -f
-```
-
-
-> ⚠️ **Remember:** Replace `User=student` and folder names with your actual paths before saving the unit files.
-
----
-
-## ⚙️ Service Management Commands
-
-
-#### ▶️ **Start**
-
-```
-sudo systemctl start led-backend.service
-```
-```
-sudo systemctl start led-frontend.service
-```
-
-#### ⏹️ **Stop**
-```
-sudo systemctl stop led-backend.service
-```
-```
-sudo systemctl stop led-frontend.service
-```
-
-#### 🔁 **Restart** 
-```
-sudo systemctl restart led-backend.service
-```
-```
-sudo systemctl restart led-frontend.service
-```
-
-#### 🧾 **Status** 
-```
-sudo sudo systemctl status led-backend.service
-```
-```
 sudo systemctl status led-frontend.service
 ```
 
-#### 🚫 **Disable (Stop auto-start)** 
-```
-sudo systemctl disable --now led-backend.service led-frontend.service
-```
-```
-sudo systemctl disable --now led-backend.service
-```
-```
-sudo systemctl disable --now led-frontend.service
+Reboot and verify they start automatically:
+
+```bash
+sudo reboot
 ```
 
----
+After reboot:
 
-## 📝 Summary
+```bash
+sudo systemctl status led-backend.service
+sudo systemctl status led-frontend.service
+```
 
-* `.bashrc` is fine for testing — **not reliable** for boot-level startup.
-* `systemd` is the proper way to:
+## Common Problems & Fixes
+- Service not starting:
+  - Check logs:
 
-  * Auto-run at boot
-  * Auto-restart on failure
-  * Manage via `systemctl`
-  * View logs with `journalctl`
-* Once configured, your **backend** and **frontend** will both launch automatically every time your Raspberry Pi starts, no manual steps needed.
+    ```bash
+    sudo journalctl -u led-backend.service -f
+    sudo journalctl -u led-frontend.service -f
+    ```
 
----
+- Port already in use:
+  - Change the port in the service file and reload systemd.
+  - Backend default: 8000, frontend default: 5501.
+
+- Permission denied:
+  - Make sure the `User=` field is correct and has access to the folders.
+  - Confirm the virtual environment path exists for the backend service.
+
+- Wrong working directory:
+  - Double-check `WorkingDirectory=` paths match your install location.
+
+## How to Stop or Disable Auto-Run
+- Temporarily stop:
+
+```bash
+sudo systemctl stop led-backend.service
+sudo systemctl stop led-frontend.service
+```
+
+- Permanently disable:
+
+```bash
+sudo systemctl disable led-backend.service
+sudo systemctl disable led-frontend.service
+```
+
+## Notes & Warnings
+- Do not change the service names unless you also update all systemctl commands.
+- Do not remove `WorkingDirectory=` or `ExecStart=` values; services will fail to start.
+- Use absolute paths in systemd files.
+- If your project path has spaces, escape them as shown in the frontend `WorkingDirectory=`.

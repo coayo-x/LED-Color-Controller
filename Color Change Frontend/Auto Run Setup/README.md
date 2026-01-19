@@ -1,4 +1,3 @@
----
 # Auto-Run Setup
 
 ## What This Auto-Run Setup Is For

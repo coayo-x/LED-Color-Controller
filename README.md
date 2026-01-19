@@ -43,7 +43,7 @@ sudo raspi-config
 3. Clone the repository:
 
 ```bash
-git clone https://github.com/Amin-Alashkar/LED-Color-Controller.git
+git clone https://github.com/coayo-x/LED-Color-Controller.git
 cd LED-Color-Controller
 ```
 
